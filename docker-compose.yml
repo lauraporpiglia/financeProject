@@ -1,0 +1,16 @@
+version: '3.6'
+services:
+  app:
+    image: "mentoringprj"
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+
+
+
+
+
+
+
+
