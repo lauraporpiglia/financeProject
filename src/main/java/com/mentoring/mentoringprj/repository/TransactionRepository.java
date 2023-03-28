@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,6 +50,9 @@ public class TransactionRepository {
         return records.stream().map(record -> Transaction.builder()
                         .name(record[0])
                         .amount(Long.parseLong(record[1]))
+                        .description(record[2])
+                        .date(LocalDateTime.parse(record[3]))
+                        .type(record[4])
                         .build())
                 .collect(Collectors.toList());
 
