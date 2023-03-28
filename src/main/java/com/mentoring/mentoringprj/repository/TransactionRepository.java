@@ -1,6 +1,7 @@
 package com.mentoring.mentoringprj.repository;
 
 import com.mentoring.mentoringprj.domain.Transaction;
+import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -39,14 +40,21 @@ public class TransactionRepository {
         }
     }
 
-    public List<Transaction> getTransactions() {
+    public List<Transaction> getTransactions() throws TransactionReadException {
 
         List<String[]> records;
         try {
             records = csvReader.readAll();
+            return createTransactionsFromRecord(records);
         } catch (CsvException | IOException e) {
             throw new RuntimeException(e);
+
+        } catch(NumberFormatException nfe){
+            throw new TransactionReadException("could not parse number in the transaction", nfe);
         }
+    }
+
+    private List<Transaction> createTransactionsFromRecord(List<String[]> records) {
         return records.stream().map(record -> Transaction.builder()
                         .name(record[0])
                         .amount(Long.parseLong(record[1]))
@@ -55,6 +63,5 @@ public class TransactionRepository {
                         .type(record[4])
                         .build())
                 .collect(Collectors.toList());
-
     }
 }

@@ -1,6 +1,7 @@
 package com.mentoring.mentoringprj.service;
 
 import com.mentoring.mentoringprj.domain.Transaction;
+import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import com.mentoring.mentoringprj.repository.TransactionRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +19,7 @@ class TransactionServiceTest {
     private TransactionRepository repository;
 
     @Test
-    void should_return_transactions() {
+    void should_return_transactions() throws TransactionReadException {
         Transaction expectedTransaction =  Transaction.builder().build();
         when(repository.getTransactions()).thenReturn(List.of(expectedTransaction)); //remember this is a given not a when ARRANGE
         TransactionService service = new TransactionService(repository);
@@ -27,5 +28,5 @@ class TransactionServiceTest {
         //then
         assertThat(transactions).containsExactly(expectedTransaction);
     }
-
+/* @todo: update test exception */
 }

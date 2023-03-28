@@ -1,6 +1,7 @@
 package com.mentoring.mentoringprj.controller;
 
 import com.mentoring.mentoringprj.domain.Transaction;
+import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import com.mentoring.mentoringprj.service.TransactionService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +21,7 @@ class TransactionControllerTest {
     private TransactionService transactionService ;
 
     @Test
-    void should_return_transactions() {
+    void should_return_transactions() throws TransactionReadException {
         //given
         Transaction expectedTransaction =  Transaction.builder().build();
         when(transactionService.getTransactions()).thenReturn(List.of(expectedTransaction)); //we use when even if it's legacy
