@@ -12,5 +12,5 @@ public class Transaction {
     private final long amount;
     private final String description;
     private final LocalDateTime date;
-    private final String type;
+    private final TransactionType type;
 }

@@ -28,5 +28,5 @@ class TransactionServiceTest {
         //then
         assertThat(transactions).containsExactly(expectedTransaction);
     }
-/* @todo: update test exception */
+
 }
