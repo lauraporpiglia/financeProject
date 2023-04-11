@@ -1,8 +1,11 @@
 package com.mentoring.mentoringprj.service;
 
+import com.mentoring.mentoringprj.domain.AccountDetails;
 import com.mentoring.mentoringprj.domain.Transaction;
+import com.mentoring.mentoringprj.domain.TransactionType;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import com.mentoring.mentoringprj.repository.TransactionRepository;
+import com.mentoring.mentoringprj.util.TransactionCalculator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -14,19 +17,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TransactionServiceTest {
+class AccountServiceTest {
     @Mock
     private TransactionRepository repository;
 
+
     @Test
     void should_return_transactions() throws TransactionReadException {
-        Transaction expectedTransaction =  Transaction.builder().build();
+        Transaction expectedTransaction =  Transaction.builder().type(TransactionType.CREDIT).amount(1111).build();
         when(repository.getTransactions()).thenReturn(List.of(expectedTransaction)); //remember this is a given not a when ARRANGE
-        TransactionService service = new TransactionService(repository);
+        AccountService service = new AccountService(repository, new TransactionCalculator());
         //act
-        List<Transaction> transactions = service.getTransactions();
+        AccountDetails accountDetails = service.getAccountDetails();
         //then
-        assertThat(transactions).containsExactly(expectedTransaction);
+        assertThat(accountDetails.getTransactions()).containsExactly(expectedTransaction);
+        assertThat(accountDetails.getBalance()).isEqualTo(1111);
     }
 
 }

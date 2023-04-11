@@ -1,8 +1,10 @@
 package com.mentoring.mentoringprj.controller;
 
+import com.mentoring.mentoringprj.domain.AccountDetails;
 import com.mentoring.mentoringprj.domain.Transaction;
+import com.mentoring.mentoringprj.domain.TransactionType;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
-import com.mentoring.mentoringprj.service.TransactionService;
+import com.mentoring.mentoringprj.service.AccountService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -12,25 +14,26 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class) //at every test it will remock the service
 class TransactionControllerTest {
 
     @Mock
-    private TransactionService transactionService ;
+    private AccountService transactionService ;
 
     @Test
     void should_return_transactions() throws TransactionReadException {
         //given
-        Transaction expectedTransaction =  Transaction.builder().build();
-        when(transactionService.getTransactions()).thenReturn(List.of(expectedTransaction)); //we use when even if it's legacy
+        Transaction expectedTransaction =  Transaction.builder().amount(1111).type(TransactionType.CREDIT).build();
+        List<Transaction> expectedTransactions = List.of(expectedTransaction);
+        AccountDetails accountDetails = AccountDetails.builder().transactions(expectedTransactions).build();
+        when(transactionService.getAccountDetails()).thenReturn(accountDetails); //we use when even if it's legacy
       // given(transactionService.getTransactions()).willReturn(List.of(expectedTransaction)); // do not use
-        TransactionController transactionController = new TransactionController(transactionService);
+        AccountController accountController = new AccountController(transactionService);
         //when
-        List<Transaction> transactions = transactionController.getTransactions();
+       AccountDetails result = accountController.getAccountDetails();
         //then
-        assertThat(transactions).containsExactly(expectedTransaction);
+        assertThat(result).isEqualTo(accountDetails);
 
     }
 
