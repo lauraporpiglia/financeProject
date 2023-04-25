@@ -3,6 +3,7 @@ package com.mentoring.mentoringprj.controller;
 import com.mentoring.mentoringprj.domain.AccountDetails;
 import com.mentoring.mentoringprj.domain.Transaction;
 import com.mentoring.mentoringprj.domain.TransactionType;
+import com.mentoring.mentoringprj.exceptions.AmountException;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import com.mentoring.mentoringprj.service.AccountService;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ class TransactionControllerTest {
     private AccountService transactionService ;
 
     @Test
-    void should_return_transactions() throws TransactionReadException {
+    void should_return_transactions() throws TransactionReadException, AmountException {
         //given
         Transaction expectedTransaction =  Transaction.builder().amount(1111).type(TransactionType.CREDIT).build();
         List<Transaction> expectedTransactions = List.of(expectedTransaction);
