@@ -14,10 +14,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AccountService {
     private final TransactionRepository repository;
-    private final TransactionCalculator calculator; /* @todo: next write test to calculate*/
+    private final TransactionCalculator calculator;
 
     public AccountDetails getAccountDetails() throws TransactionReadException {
         List<Transaction> transactions = repository.getTransactions();
-        return AccountDetails.builder().transactions(transactions).build();
+        long balance = this.calculator.calculateTotal(transactions);
+        return AccountDetails.builder()
+                .balance(balance)
+                .transactions(transactions)
+                .build();
     }
 }

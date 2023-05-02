@@ -22,7 +22,6 @@ class AccountServiceTest {
     @Mock
     private TransactionRepository repository;
 
-
     @Test
     void should_return_transactions() throws TransactionReadException, AmountException {
         Transaction expectedTransaction =  Transaction.builder().type(TransactionType.CREDIT).amount(300).build();
@@ -32,7 +31,6 @@ class AccountServiceTest {
         AccountDetails accountDetails = service.getAccountDetails();
         //then
         assertThat(accountDetails.getTransactions()).containsExactly(expectedTransaction);
-        //assertThat(accountDetails.getBalance()).isEqualTo(300);
+        assertThat(accountDetails.getBalance()).isEqualTo(300);
     }
-//add test that checks account balance is correct
 }

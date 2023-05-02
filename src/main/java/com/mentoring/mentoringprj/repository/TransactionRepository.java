@@ -92,7 +92,7 @@ public class TransactionRepository {
         } catch (AmountException e) {
             throw new TransactionReadException("Incorrect amount", e);
         } catch (Exception e) {
-            throw new TransactionReadException("unhandled exception occurred", e);
+            throw new TransactionReadException(" ", e);
         }
     }
 }

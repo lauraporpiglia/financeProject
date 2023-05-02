@@ -34,4 +34,16 @@ class TransactionCalculatorTest {
         assertThat(total).isEqualTo(30);
     }
 
+    @Test
+    void given_two_transactions_calculate_sum_withNegativeTotal(){
+        TransactionCalculator calculator = new TransactionCalculator() ;
+        List<Transaction> transactionList = List.of(
+                Transaction.builder().amount(100).type(TransactionType.CREDIT).build(),
+                Transaction.builder().amount(110).type(TransactionType.DEBIT).build()
+        );
+
+        long total = calculator.calculateTotal(transactionList);
+        assertThat(total).isEqualTo(-10);
+    }
+
 }
