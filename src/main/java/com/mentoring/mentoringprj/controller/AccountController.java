@@ -7,9 +7,13 @@ import com.mentoring.mentoringprj.service.AccountService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/account")
 public class AccountController {
@@ -20,8 +24,13 @@ public class AccountController {
         this.accountService = transactionService;
     }
 
-    @GetMapping( path = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    public AccountDetails getAccountDetails() throws TransactionReadException {
+    @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    public AccountDetails getAccountDetails(
+            @RequestParam(name = "from", required = false) Optional<LocalDateTime> from,
+            @RequestParam(name = "to", required = false) Optional<LocalDateTime> to) throws TransactionReadException {
+        if (from.isPresent() && to.isPresent()) {
+            return  accountService.getAccountDetails(from.get(), to.get());
+        }
         return accountService.getAccountDetails();
     }
 }

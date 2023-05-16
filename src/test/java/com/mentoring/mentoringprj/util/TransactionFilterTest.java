@@ -8,13 +8,12 @@ import java.util.Collections;
 import java.util.List;
 
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 class TransactionFilterTest {
     @Test
-    void should_return_empty_list(){
+    void should_return_empty_list() {
         //GIVEN
         TransactionFilter filter = new TransactionFilter();
         List<Transaction> allTransactions = Collections.emptyList();
@@ -24,23 +23,28 @@ class TransactionFilterTest {
         //THEN
         assertThat(results).isEmpty();
     }
-    //fix code to be inclusive
+
     @Test
-    void should_return_transactions_between_dates_including_edges(){
+    void should_return_transactions_between_dates_including_edges() {
         TransactionFilter filter = new TransactionFilter();
         LocalDateTime fromDate = LocalDateTime.parse("2023-03-15T13:14:00");
         LocalDateTime toDate = LocalDateTime.parse("2023-03-15T13:14:59");
 
         Transaction earlyOutOfTimeWindowTransaction = Transaction.builder().name("early").date(fromDate.minusSeconds(1)).build();
         Transaction earlyInTimeWindowTransaction = Transaction.builder().name("earlyintime").date(fromDate).build();
+        Transaction middleTransaction = Transaction.builder().name("middleTransaction").date(fromDate.plusSeconds(30)).build();
         Transaction lateInTimeWindowTransaction = Transaction.builder().name("laterintime").date(toDate).build();
         Transaction laterOutOfTimeWindowTransaction = Transaction.builder().name("later").date(toDate.plusSeconds(1)).build();
 
-        List<Transaction> allTransactions = List.of(earlyOutOfTimeWindowTransaction, earlyInTimeWindowTransaction, lateInTimeWindowTransaction,laterOutOfTimeWindowTransaction);
+        List<Transaction> allTransactions = List.of(earlyOutOfTimeWindowTransaction,
+                earlyInTimeWindowTransaction,
+                middleTransaction,
+                lateInTimeWindowTransaction,
+                laterOutOfTimeWindowTransaction);
 
         List<Transaction> results = filter.getTransactionsBetween(allTransactions, fromDate, toDate);
 
-        assertThat(results).containsExactly(earlyInTimeWindowTransaction,lateInTimeWindowTransaction);
+        assertThat(results).containsExactly(earlyInTimeWindowTransaction, middleTransaction,lateInTimeWindowTransaction);
     }
 
 }
