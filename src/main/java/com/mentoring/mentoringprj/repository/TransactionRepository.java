@@ -19,32 +19,27 @@ import java.util.List;
 
 @Repository
 public class TransactionRepository {
-    private final CSVReader csvReader;
+    private final String path;
+    private final CSVParser parser;
 
     //do not use autowired @Value
     public TransactionRepository(@Value("${transactions.path}") String path) {
-        try {
-            Reader fileReader = new FileReader(path);
-            CSVParser parser = new CSVParserBuilder()
-                    .withSeparator(',')
-                    .withIgnoreQuotations(true)
-                    .build();
-
-            csvReader = new CSVReaderBuilder(fileReader)
-                    .withSkipLines(1)
-                    .withCSVParser(parser)
-                    .build();
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        this.path = path;
+        this.parser = new CSVParserBuilder()
+                .withSeparator(',')
+                .withIgnoreQuotations(true)
+                .build();
     }
 
     public List<Transaction> getTransactions() throws TransactionReadException {
 
         List<String[]> records;
-        try {
+        try (CSVReader csvReader = new CSVReaderBuilder(new FileReader(path))
+                .withSkipLines(1)
+                .withCSVParser(parser)
+                .build()) {
             records = csvReader.readAll();
+
             return createTransactionsFromRecords(records);
         } catch (CsvException | IOException e) {
             throw new RuntimeException(e);
