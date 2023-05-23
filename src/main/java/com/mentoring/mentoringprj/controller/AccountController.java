@@ -28,9 +28,7 @@ public class AccountController {
     public AccountDetails getAccountDetails(
             @RequestParam(name = "from", required = false) Optional<LocalDateTime> from,
             @RequestParam(name = "to", required = false) Optional<LocalDateTime> to) throws TransactionReadException {
-        if (from.isPresent() && to.isPresent()) {
-            return  accountService.getAccountDetails(from.get(), to.get());
-        }
-        return accountService.getAccountDetails();
+
+        return  accountService.getAccountDetails(from, to);
     }
 }

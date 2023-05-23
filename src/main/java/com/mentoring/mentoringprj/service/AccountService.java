@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,22 +21,21 @@ public class AccountService {
 
     private final TransactionFilter filter;
 
-    public AccountDetails getAccountDetails() throws TransactionReadException {
+    public AccountDetails getAccountDetails(Optional<LocalDateTime> from, Optional<LocalDateTime> to) throws TransactionReadException {
         List<Transaction> transactions = repository.getTransactions();
+
+        if (from.isPresent() && to.isPresent()) {
+            transactions = filter.getTransactionsBetween(transactions, from.get(), to.get());
+        }else if(from.isPresent()){
+            transactions = filter.getTransactionsBetween(transactions, from.get(), LocalDateTime.now());
+        }else if(to.isPresent()){
+            transactions = filter.getTransactionsBetween(transactions,LocalDateTime.MIN, to.get());
+        }
+
         long balance = this.calculator.calculateTotal(transactions);
         return AccountDetails.builder()
                 .balance(balance)
                 .transactions(transactions)
-                .build();
-    }
-
-    public AccountDetails getAccountDetails(LocalDateTime from, LocalDateTime to) throws TransactionReadException {
-        List<Transaction> transactions = repository.getTransactions();
-        List<Transaction> filteredTransactions = filter.getTransactionsBetween(transactions, from, to);
-        long balance = this.calculator.calculateTotal(filteredTransactions);
-        return AccountDetails.builder()
-                .balance(balance)
-                .transactions(filteredTransactions)
                 .build();
     }
 }
