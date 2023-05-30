@@ -4,6 +4,7 @@ import com.mentoring.mentoringprj.domain.AccountDetails;
 import com.mentoring.mentoringprj.domain.Transaction;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import com.mentoring.mentoringprj.repository.TransactionRepository;
+import com.mentoring.mentoringprj.util.LocalDateTimeProvider;
 import com.mentoring.mentoringprj.util.TransactionCalculator;
 import com.mentoring.mentoringprj.util.TransactionFilter;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +22,15 @@ public class AccountService {
 
     private final TransactionFilter filter;
 
+    private final LocalDateTimeProvider dateProvider;
+
     public AccountDetails getAccountDetails(Optional<LocalDateTime> from, Optional<LocalDateTime> to) throws TransactionReadException {
         List<Transaction> transactions = repository.getTransactions();
 
         if (from.isPresent() && to.isPresent()) {
             transactions = filter.getTransactionsBetween(transactions, from.get(), to.get());
         }else if(from.isPresent()){
-            transactions = filter.getTransactionsBetween(transactions, from.get(), LocalDateTime.now());
+            transactions = filter.getTransactionsBetween(transactions, from.get(), dateProvider.now());
         }else if(to.isPresent()){
             transactions = filter.getTransactionsBetween(transactions,LocalDateTime.MIN, to.get());
         }
