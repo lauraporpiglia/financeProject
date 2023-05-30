@@ -1,2 +1,4 @@
 transactions:
   path: /Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/main/resources/transactions/transactions.csv
+  json:
+    path: /Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/main/resources/transactions/transactions.json

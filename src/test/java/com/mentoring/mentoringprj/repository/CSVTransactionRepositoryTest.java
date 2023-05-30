@@ -15,12 +15,12 @@ import static com.mentoring.mentoringprj.domain.TransactionType.DEBIT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class TransactionRepositoryTest {
+class CSVTransactionRepositoryTest {
 
     @Test
     void should_return_transactions() throws TransactionReadException, AmountException {
         String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/goodTransactions.csv";
-        TransactionRepository repository = new TransactionRepository(path);
+        CSVTransactionRepository repository = new CSVTransactionRepository(path);
         Transaction firstTransaction = Transaction.builder().name("transaction1").amount(300).date(LocalDateTime.parse("2023-03-15T13:14:15")).description("gold").type(DEBIT).build();
         Transaction secondTransaction = Transaction.builder().name("transaction2").amount(500).date(LocalDateTime.parse("2021-11-28T04:05:06")).description("silver").type(CREDIT).build();
 
@@ -32,7 +32,7 @@ class TransactionRepositoryTest {
     @Test
     void should_not_return_transactions_when_file_is_empty() throws TransactionReadException, AmountException {
         String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/emptyFile.csv";
-        TransactionRepository repository = new TransactionRepository(path);
+        CSVTransactionRepository repository = new CSVTransactionRepository(path);
         List<Transaction> transactions = repository.getTransactions();
 
         assertThat(transactions).isEmpty();
@@ -41,7 +41,7 @@ class TransactionRepositoryTest {
     @Test
     void should_throw_corrected_exception_when_amount_isNAN() {
         String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/amountNan.csv";
-        TransactionRepository repository = new TransactionRepository(path);
+        CSVTransactionRepository repository = new CSVTransactionRepository(path);
         TransactionReadException exception = assertThrows(TransactionReadException.class, repository::getTransactions);
 
         assertThat(exception).hasMessage("Incorrect amount");
@@ -50,7 +50,7 @@ class TransactionRepositoryTest {
     @Test
     void should_throw_correct_exception_when_type_is_credit_or_debit() {
         String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/unknownType.csv";
-        TransactionRepository repository = new TransactionRepository(path);
+        CSVTransactionRepository repository = new CSVTransactionRepository(path);
         TransactionReadException exception = assertThrows(TransactionReadException.class, repository::getTransactions);
 
         assertThat(exception).hasMessage("could not parse transaction type");
@@ -69,7 +69,7 @@ class TransactionRepositoryTest {
     @Test
     void should_throw_correct_exception_when_amount_is_zero_or_less() throws TransactionReadException, AmountException {
         String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/emptyAmount.csv";
-        TransactionRepository repository = new TransactionRepository(path);
+        CSVTransactionRepository repository = new CSVTransactionRepository(path);
 
         TransactionReadException exception = assertThrows(TransactionReadException.class, repository::getTransactions);
 
@@ -80,7 +80,7 @@ class TransactionRepositoryTest {
     @Test
     void should_throw_correct_exception_when_type_is_not_credit_or_debit() throws TransactionReadException, AmountException {
         String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/wrongType.csv";
-        TransactionRepository repository = new TransactionRepository(path);
+        CSVTransactionRepository repository = new CSVTransactionRepository(path);
 
         TransactionReadException exception = assertThrows(TransactionReadException.class, repository::getTransactions);
 
