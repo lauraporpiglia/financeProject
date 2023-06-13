@@ -1,0 +1,12 @@
+{
+  "transactions": [
+    {
+      "name": "transaction1",
+      "amount": 123,
+      "description": {},
+      "date": "2023-03-15T13:14:15",
+      "type": "DEBIT"
+    }
+  ]
+}
+

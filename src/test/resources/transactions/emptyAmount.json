@@ -2,14 +2,14 @@
   "transactions": [
     {
       "name": "transaction1",
-      "amount": 88888,
+      "amount": -5,
       "description": "gold",
       "date": "2023-03-15T13:14:15",
       "type": "DEBIT"
     },
     {
       "name": "transaction2",
-      "amount": 500,
+      "amount": 0,
       "description": "silver",
       "date": "2021-11-28T04:05:06",
       "type": "CREDIT"

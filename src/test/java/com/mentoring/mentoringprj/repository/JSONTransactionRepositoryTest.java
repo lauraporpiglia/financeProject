@@ -11,6 +11,7 @@ import java.util.List;
 import static com.mentoring.mentoringprj.domain.TransactionType.CREDIT;
 import static com.mentoring.mentoringprj.domain.TransactionType.DEBIT;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class JSONTransactionRepositoryTest {
     @Test
@@ -24,4 +25,46 @@ public class JSONTransactionRepositoryTest {
 
         assertThat(transactions).containsExactly(firstTransaction, secondTransaction);
     }
+
+     @Test
+    void should_not_return_an_empty_list_of_transactions_when_file_is_empty() throws TransactionReadException, AmountException {
+        String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/emptyFile.json";
+        JSONTransactionRepository repository = new JSONTransactionRepository(path);
+        List<Transaction> transactions = repository.getTransactions();
+
+        assertThat(transactions).isEmpty();
+    }
+
+    @Test
+    void should_throw_corrected_exception_when_amount_isNAN() {
+        String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/amountNan.json";
+        JSONTransactionRepository repository = new JSONTransactionRepository(path);
+        TransactionReadException exception = assertThrows(TransactionReadException.class, repository::getTransactions);
+
+        assertThat(exception).hasMessage("Data Type mismatch");
+    }
+
+
+    @Test
+    void should_throw_correct_exception_when_type_is_not_credit_or_debit() {
+        String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/unknownType.json";
+        JSONTransactionRepository repository = new JSONTransactionRepository(path);
+        TransactionReadException exception = assertThrows(TransactionReadException.class, repository::getTransactions);
+
+        assertThat(exception).hasMessage("Data Type mismatch");
+    }
+
+
+    @Test
+    void should_throw_correct_exception_when_amount_is_zero_or_less() throws TransactionReadException, AmountException {
+        String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/emptyAmount.json";
+        JSONTransactionRepository repository = new JSONTransactionRepository(path);
+
+            TransactionReadException exception = assertThrows(TransactionReadException.class, repository::getTransactions);
+
+        assertThat(exception).hasMessage("Incorrect amount");
+    }
+
+   
+
 }

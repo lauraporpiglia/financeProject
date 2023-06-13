@@ -30,7 +30,7 @@ class CSVTransactionRepositoryTest {
     }
 
     @Test
-    void should_not_return_transactions_when_file_is_empty() throws TransactionReadException, AmountException {
+    void should_not_return_an_empty_list_of_transactions_when_file_is_empty() throws TransactionReadException, AmountException {
         String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/emptyFile.csv";
         CSVTransactionRepository repository = new CSVTransactionRepository(path);
         List<Transaction> transactions = repository.getTransactions();
@@ -48,24 +48,13 @@ class CSVTransactionRepositoryTest {
     }
 
     @Test
-    void should_throw_correct_exception_when_type_is_credit_or_debit() {
+    void should_throw_correct_exception_when_type_is_not_credit_or_debit() {
         String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/unknownType.csv";
         CSVTransactionRepository repository = new CSVTransactionRepository(path);
         TransactionReadException exception = assertThrows(TransactionReadException.class, repository::getTransactions);
 
         assertThat(exception).hasMessage("could not parse transaction type");
     }
-
-    /* @todo: update test exception
-     * amount not empty
-     * amount should be always > 0
-     * type credit/debit only
-     * handle extra spaces
-     * dateFormat incorrect
-     * ignore quotation
-     * not enough columns
-     * trailing white lines
-     *  */
     @Test
     void should_throw_correct_exception_when_amount_is_zero_or_less() throws TransactionReadException, AmountException {
         String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/emptyAmount.csv";
@@ -77,13 +66,4 @@ class CSVTransactionRepositoryTest {
         assertThat(exception).hasCauseInstanceOf(AmountException.class);
     }
 
-    @Test
-    void should_throw_correct_exception_when_type_is_not_credit_or_debit() throws TransactionReadException, AmountException {
-        String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/wrongType.csv";
-        CSVTransactionRepository repository = new CSVTransactionRepository(path);
-
-        TransactionReadException exception = assertThrows(TransactionReadException.class, repository::getTransactions);
-
-        assertThat(exception).hasMessage("could not parse transaction type");
-    }
 }
