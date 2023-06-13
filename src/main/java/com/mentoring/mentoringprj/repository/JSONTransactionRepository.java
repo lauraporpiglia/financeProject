@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.mentoring.mentoringprj.domain.Transaction;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-@Primary
+@Qualifier("json")
 public class JSONTransactionRepository implements TransactionRepository {
     private Path path;
 
