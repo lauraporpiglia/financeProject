@@ -5,12 +5,15 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.mentoring.mentoringprj.domain.Transaction;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,10 +23,12 @@ import java.util.List;
 @Repository
 @Qualifier("json")
 public class JSONTransactionRepository implements TransactionRepository {
-    private Path path;
+    private final Path path;
+    private final ObjectMapper objectMapper;
 
-    public JSONTransactionRepository(@Value("${transactions.json.path}") String path) {
+    public JSONTransactionRepository(@Value("${transactions.json.path}") String path, ObjectMapper objectMapper) {
         this.path = Paths.get(path);
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -34,7 +39,7 @@ public class JSONTransactionRepository implements TransactionRepository {
             if (fileContent.isEmpty()) {
                 return new ArrayList<>();
             }
-            ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+
             transactionWrapper = objectMapper.readValue(fileContent, TransactionWrapper.class);
         } catch (MismatchedInputException e) {
             throw new TransactionReadException("Data Type mismatch", e);
@@ -47,6 +52,24 @@ public class JSONTransactionRepository implements TransactionRepository {
 
 
     }
+
+    @Override
+    public void addTransaction(Transaction transaction) throws TransactionReadException, IOException {
+        List<Transaction> transactions = getTransactions();
+        transactions.add(transaction);
+
+        TransactionWrapper transWrapper = new TransactionWrapper();
+        transWrapper.setTransactions(transactions);
+
+        byte[] bytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(transWrapper);
+
+
+        OutputStream outStream = new FileOutputStream(path.toFile());
+        outStream.write(bytes);
+
+        IOUtils.closeQuietly(outStream);
+    }
+
 
     private void validateTransaction(List<Transaction> transactions) throws TransactionReadException {
         for (Transaction transaction : transactions) {

@@ -55,6 +55,11 @@ public class CSVTransactionRepository implements TransactionRepository {
 
     }
 
+    @Override
+    public void addTransaction(Transaction transaction) {
+
+    }
+
     private List<Transaction> createTransactionsFromRecords(List<String[]> records) throws TransactionReadException {
         List<Transaction> list = new ArrayList<>();
         for (String[] record : records) {
