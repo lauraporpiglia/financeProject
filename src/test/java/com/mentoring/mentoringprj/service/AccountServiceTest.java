@@ -12,6 +12,7 @@ import com.mentoring.mentoringprj.util.TransactionFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -22,7 +23,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AccountServiceTest {
@@ -104,6 +105,36 @@ class AccountServiceTest {
         assertThat(accountDetails.getTransactions()).contains(transaction1, transaction2);
         assertThat(accountDetails.getBalance()).isEqualTo(500);
     }
+
+    @Test
+    void should_call_repository_correctly_when_adding_a_transaction() throws Exception{
+        //given
+        Transaction newTransaction = Transaction.builder().type(TransactionType.CREDIT).amount(200).build();
+
+        //when
+        service.addTransaction(newTransaction);
+
+        //then
+        InOrder inOrder = inOrder(repository);
+        inOrder.verify(repository).addTransaction(newTransaction); //remember verify just check interactions
+        inOrder.verify(repository).getTransactions();
+    }
+
+    @Test
+    void should_return_correct_results_when_adding_transaction() throws Exception{
+        //given
+        Transaction existingTransaction = Transaction.builder().type(TransactionType.CREDIT).amount(300).build();
+        Transaction newTransaction = Transaction.builder().type(TransactionType.CREDIT).amount(200).build();
+        when(repository.getTransactions()).thenReturn(List.of(existingTransaction, newTransaction));
+
+        //when
+        AccountDetails accountDetails = service.addTransaction(newTransaction);
+
+        //then
+        verify(repository).addTransaction(newTransaction); //remember verify just check interactions
+        assertThat(accountDetails.getTransactions()).containsExactly(existingTransaction, newTransaction);
+    }
+
 
     // filtering by 1 date (from AND to)
     //   - if only fromDate then set toDate to eijhcberlbrrfvtudhcrh

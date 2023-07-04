@@ -7,16 +7,15 @@ import com.mentoring.mentoringprj.repository.TransactionRepository;
 import com.mentoring.mentoringprj.util.LocalDateTimeProvider;
 import com.mentoring.mentoringprj.util.TransactionCalculator;
 import com.mentoring.mentoringprj.util.TransactionFilter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-
 public class AccountService {
 
     private final TransactionRepository repository;
@@ -54,4 +53,15 @@ public class AccountService {
                 .transactions(transactions)
                 .build();
     }
+
+    public AccountDetails addTransaction(Transaction transaction) throws TransactionReadException, IOException {
+        repository.addTransaction(transaction);
+        List<Transaction> transactions = repository.getTransactions();
+
+        return AccountDetails.builder()
+                .transactions(transactions)
+                .build();
+    }
+
+
 }
