@@ -133,6 +133,7 @@ class AccountServiceTest {
         //then
         verify(repository).addTransaction(newTransaction); //remember verify just check interactions
         assertThat(accountDetails.getTransactions()).containsExactly(existingTransaction, newTransaction);
+        assertThat(accountDetails.getBalance()).isEqualTo(500);
     }
 
 

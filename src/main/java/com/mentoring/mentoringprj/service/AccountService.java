@@ -56,11 +56,7 @@ public class AccountService {
 
     public AccountDetails addTransaction(Transaction transaction) throws TransactionReadException, IOException {
         repository.addTransaction(transaction);
-        List<Transaction> transactions = repository.getTransactions();
-
-        return AccountDetails.builder()
-                .transactions(transactions)
-                .build();
+        return getAccountDetails(Optional.empty(), Optional.empty());
     }
 
 
