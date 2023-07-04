@@ -65,5 +65,15 @@ class CSVTransactionRepositoryTest {
         assertThat(exception).hasMessage("Incorrect amount");
         assertThat(exception).hasCauseInstanceOf(AmountException.class);
     }
+    @Test
+    void should_throw_an_exception_when_add_transaction_from_CSV() throws Exception {
+        String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/goodTransactions.csv";
+        CSVTransactionRepository repository = new CSVTransactionRepository(path);
 
+        UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+                () -> repository.addTransaction(Transaction.builder().build()));
+
+
+        assertThat(exception).hasMessage("Can't add a transaction using CSV repository");
+    }
 }

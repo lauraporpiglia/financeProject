@@ -57,7 +57,7 @@ public class CSVTransactionRepository implements TransactionRepository {
 
     @Override
     public void addTransaction(Transaction transaction) {
-
+        throw new UnsupportedOperationException("Can't add a transaction using CSV repository");
     }
 
     private List<Transaction> createTransactionsFromRecords(List<String[]> records) throws TransactionReadException {

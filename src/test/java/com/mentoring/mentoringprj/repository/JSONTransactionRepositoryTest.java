@@ -89,8 +89,7 @@ public class JSONTransactionRepositoryTest {
         //given
         Path originalPath = Path.of("/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/goodTransactions.json");
         Path newPath = Path.of("/Users/lauraporpiglia/rides/mentoring/mentoringPrj/build/testout/goodTransactions.json");
-        newPath.toFile().getParentFile().mkdirs();
-        Files.copy(originalPath, newPath, StandardCopyOption.REPLACE_EXISTING);
+        copyFile(originalPath, newPath);
 
         JSONTransactionRepository repository = new JSONTransactionRepository(newPath.toString(),objectMapper);
         Transaction firstTransaction = Transaction.builder().name("transaction1").amount(300).date(LocalDateTime.parse("2023-03-15T13:14:15")).description("gold").type(DEBIT).build();
@@ -105,6 +104,11 @@ public class JSONTransactionRepositoryTest {
         assertThat(transactions).containsExactly(firstTransaction, secondTransaction, newTransaction);
 
 
+    }
+
+    private static void copyFile(Path originalPath, Path newPath) throws IOException {
+        newPath.toFile().getParentFile().mkdirs();
+        Files.copy(originalPath, newPath, StandardCopyOption.REPLACE_EXISTING);
     }
 
 
