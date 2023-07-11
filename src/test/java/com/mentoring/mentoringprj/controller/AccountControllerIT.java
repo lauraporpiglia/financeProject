@@ -14,12 +14,12 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.from;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -58,6 +58,19 @@ public class AccountControllerIT {
                 .toUriString();
 
         ResponseEntity<AccountDetails> response = restTemplate.getForEntity(url, AccountDetails.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
+        assertThat(response.getBody()).isEqualTo(expectedAccountDetails);
+    }
+    @Test
+    void should_add_transactions() throws TransactionReadException, IOException {
+        Transaction existingTransaction = Transaction.builder().amount(300).type(TransactionType.CREDIT).build();
+        Transaction newTransaction = Transaction.builder().amount(150).type(TransactionType.CREDIT).build();
+        List<Transaction> expectedTransactions = List.of(existingTransaction,newTransaction);
+        AccountDetails expectedAccountDetails = AccountDetails.builder().balance(450).transactions(expectedTransactions).build();
+        when(accountService.addTransaction(newTransaction)).thenReturn(expectedAccountDetails);
+
+        ResponseEntity<AccountDetails> response = restTemplate.postForEntity("/account", newTransaction, AccountDetails.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
         assertThat(response.getBody()).isEqualTo(expectedAccountDetails);
