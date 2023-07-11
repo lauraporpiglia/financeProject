@@ -60,6 +60,11 @@ public class CSVTransactionRepository implements TransactionRepository {
         throw new UnsupportedOperationException("Can't add a transaction using CSV repository");
     }
 
+    @Override
+    public void deleteTransaction(String id) throws TransactionReadException, IOException {
+       throw new UnsupportedOperationException("Can't delete transaction using CSV repository");
+    }
+
     private List<Transaction> createTransactionsFromRecords(List<String[]> records) throws TransactionReadException {
         List<Transaction> list = new ArrayList<>();
         for (String[] record : records) {

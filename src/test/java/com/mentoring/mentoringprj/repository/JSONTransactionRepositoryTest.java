@@ -32,8 +32,8 @@ public class JSONTransactionRepositoryTest {
     void should_return_transactions() throws TransactionReadException, AmountException {
         String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/goodTransactions.json";
         JSONTransactionRepository repository = new JSONTransactionRepository(path,objectMapper);
-        Transaction firstTransaction = Transaction.builder().name("transaction1").amount(300).date(LocalDateTime.parse("2023-03-15T13:14:15")).description("gold").type(DEBIT).build();
-        Transaction secondTransaction = Transaction.builder().name("transaction2").amount(500).date(LocalDateTime.parse("2021-11-28T04:05:06")).description("silver").type(CREDIT).build();
+        Transaction firstTransaction = Transaction.builder().id("1").name("transaction1").amount(300).date(LocalDateTime.parse("2023-03-15T13:14:15")).description("gold").type(DEBIT).build();
+        Transaction secondTransaction = Transaction.builder().id("2").name("transaction2").amount(500).date(LocalDateTime.parse("2021-11-28T04:05:06")).description("silver").type(CREDIT).build();
 
         List<Transaction> transactions = repository.getTransactions();
 
@@ -92,9 +92,9 @@ public class JSONTransactionRepositoryTest {
         copyFile(originalPath, newPath);
 
         JSONTransactionRepository repository = new JSONTransactionRepository(newPath.toString(),objectMapper);
-        Transaction firstTransaction = Transaction.builder().name("transaction1").amount(300).date(LocalDateTime.parse("2023-03-15T13:14:15")).description("gold").type(DEBIT).build();
-        Transaction secondTransaction = Transaction.builder().name("transaction2").amount(500).date(LocalDateTime.parse("2021-11-28T04:05:06")).description("silver").type(CREDIT).build();
-        Transaction newTransaction = Transaction.builder().name("newTransaction").amount(123).type(DEBIT).build();
+        Transaction firstTransaction = Transaction.builder().id("1").name("transaction1").amount(300).date(LocalDateTime.parse("2023-03-15T13:14:15")).description("gold").type(DEBIT).build();
+        Transaction secondTransaction = Transaction.builder().id("2").name("transaction2").amount(500).date(LocalDateTime.parse("2021-11-28T04:05:06")).description("silver").type(CREDIT).build();
+        Transaction newTransaction = Transaction.builder().id("3").name("newTransaction").amount(123).type(DEBIT).build();
         //when
         repository.addTransaction(newTransaction);
 
@@ -104,6 +104,25 @@ public class JSONTransactionRepositoryTest {
         assertThat(transactions).containsExactly(firstTransaction, secondTransaction, newTransaction);
 
 
+    }
+
+    @Test
+    void should_delete_a_transaction() throws IOException, TransactionReadException {
+        //given
+        Path originalPath = Path.of("/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/deletableTransactions.json");
+        Path newPath = Path.of("/Users/lauraporpiglia/rides/mentoring/mentoringPrj/build/testout/deletableTransactions.json");
+        copyFile(originalPath, newPath);
+
+        JSONTransactionRepository repository = new JSONTransactionRepository(newPath.toString(),objectMapper);
+        Transaction firstTransaction = Transaction.builder().id("1").name("transaction1").amount(300).date(LocalDateTime.parse("2023-03-15T13:14:15")).description("gold").type(DEBIT).build();
+        //when
+        repository.deleteTransaction("2");
+
+        //then
+        List<Transaction> transactions = repository.getTransactions();
+
+        assertThat(transactions).containsExactly(firstTransaction);
+        /***@todo: id in all transactions files*/
     }
 
     private static void copyFile(Path originalPath, Path newPath) throws IOException {

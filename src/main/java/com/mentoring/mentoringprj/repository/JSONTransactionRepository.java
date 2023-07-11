@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @Qualifier("json")
@@ -63,6 +64,22 @@ public class JSONTransactionRepository implements TransactionRepository {
 
         byte[] bytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(transWrapper);
 
+
+        OutputStream outStream = new FileOutputStream(path.toFile());
+        outStream.write(bytes);
+
+        IOUtils.closeQuietly(outStream);
+    }
+
+    @Override
+    public void deleteTransaction(String id) throws TransactionReadException, IOException {
+        List<Transaction> transactions = getTransactions();
+        List<Transaction> filteredTransactions = transactions.stream().filter(transaction ->!transaction.getId().equals(id)).toList();
+
+        TransactionWrapper transWrapper = new TransactionWrapper();
+        transWrapper.setTransactions(filteredTransactions);
+
+        byte[] bytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(transWrapper);
 
         OutputStream outStream = new FileOutputStream(path.toFile());
         outStream.write(bytes);

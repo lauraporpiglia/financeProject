@@ -1,6 +1,7 @@
 {
   "transactions": [
     {
+      "id": "1",
       "name": "transaction1",
       "amount": 300,
       "description": "gold",
@@ -8,6 +9,7 @@
       "type": "DEBIT"
     },
     {
+      "id": "2",
       "name": "transaction2",
       "amount": 500,
       "description": "silver",

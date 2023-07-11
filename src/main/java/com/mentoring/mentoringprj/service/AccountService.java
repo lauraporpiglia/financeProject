@@ -54,10 +54,18 @@ public class AccountService {
                 .build();
     }
 
-    public AccountDetails addTransaction(Transaction transaction) throws TransactionReadException, IOException {
-        repository.addTransaction(transaction);
+    public AccountDetails getAccountDetails() throws TransactionReadException {
         return getAccountDetails(Optional.empty(), Optional.empty());
     }
 
+    public AccountDetails addTransaction(Transaction transaction) throws TransactionReadException, IOException {
+        repository.addTransaction(transaction);
+        return getAccountDetails();
+    }
 
+
+    public AccountDetails delete(String transactionId) throws TransactionReadException, IOException {
+        repository.deleteTransaction(transactionId);
+        return getAccountDetails();
+    }
 }

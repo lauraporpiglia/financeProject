@@ -10,12 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,5 +79,17 @@ public class AccountControllerIT {
         assertThat(response.getBody()).isEqualTo(expectedAccountDetails);
     }
 
+    @Test
+    void should_delete_a_transaction() throws TransactionReadException, IOException {
+        Transaction transactionToKeep = Transaction.builder().id("1").amount(300).type(TransactionType.CREDIT).build();
 
+        List<Transaction> expectedTransactions = Collections.singletonList(transactionToKeep);
+        AccountDetails expectedAccountDetails = AccountDetails.builder().balance(300).transactions(expectedTransactions).build();
+
+        when(accountService.delete("2")).thenReturn(expectedAccountDetails);
+        ResponseEntity<AccountDetails> response = restTemplate.exchange("/account/2", HttpMethod.DELETE, HttpEntity.EMPTY, AccountDetails.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
+        assertThat(response.getBody()).isEqualTo(expectedAccountDetails);
+    }
 }

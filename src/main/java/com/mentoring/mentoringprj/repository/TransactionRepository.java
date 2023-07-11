@@ -10,4 +10,5 @@ public interface TransactionRepository {
     List<Transaction> getTransactions() throws TransactionReadException;
 
     void addTransaction(Transaction transaction) throws TransactionReadException, IOException;
+    void deleteTransaction(String id) throws TransactionReadException, IOException;
 }

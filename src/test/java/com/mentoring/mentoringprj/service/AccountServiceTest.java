@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,7 +41,7 @@ class AccountServiceTest {
     }
 
     @Test
-    void should_return_transactions() throws TransactionReadException, AmountException {
+    void should_return_transactions_unfiltered() throws TransactionReadException, AmountException {
         Transaction expectedTransaction = Transaction.builder().type(TransactionType.CREDIT).amount(300).build();
         when(repository.getTransactions()).thenReturn(List.of(expectedTransaction)); //remember this is a given not a when ARRANGE
 
@@ -54,6 +52,17 @@ class AccountServiceTest {
         assertThat(accountDetails.getBalance()).isEqualTo(300);
     }
 
+    @Test
+    void should_return_transactions() throws TransactionReadException, AmountException {
+        Transaction expectedTransaction = Transaction.builder().type(TransactionType.CREDIT).amount(300).build();
+        when(repository.getTransactions()).thenReturn(List.of(expectedTransaction)); //remember this is a given not a when ARRANGE
+
+        //act
+        AccountDetails accountDetails = service.getAccountDetails();
+        //then
+        assertThat(accountDetails.getTransactions()).containsExactly(expectedTransaction);
+        assertThat(accountDetails.getBalance()).isEqualTo(300);
+    }
     @Test
     void should_return_filtered_transactions() throws TransactionReadException, AmountException {
 
@@ -135,10 +144,33 @@ class AccountServiceTest {
         assertThat(accountDetails.getTransactions()).containsExactly(existingTransaction, newTransaction);
         assertThat(accountDetails.getBalance()).isEqualTo(500);
     }
+    @Test
+    void should_return_correct_results_when_deleting_transaction() throws Exception{
+        //given
+        Transaction remainingTransaction = Transaction.builder().id("1").type(TransactionType.CREDIT).amount(300).build();
+        when(repository.getTransactions()).thenReturn(List.of(remainingTransaction));
 
+        //when
+        AccountDetails accountDetails = service.delete("2");
 
-    // filtering by 1 date (from AND to)
-    //   - if only fromDate then set toDate to eijhcberlbrrfvtudhcrh
-    //   - if only toDate then set from to start of time (LocalDateTime.MIN)....
+        //then
+        verify(repository).deleteTransaction("2"); //remember verify just check interactions
+        assertThat(accountDetails.getTransactions()).containsExactly(remainingTransaction);
+        assertThat(accountDetails.getBalance()).isEqualTo(300);
+    }
+    @Test
+    void should_call_repository_correctly_when_deleting_a_transaction() throws Exception{
+        //given
+        Transaction remainingTransaction = Transaction.builder().id("1").type(TransactionType.CREDIT).amount(300).build();
+        when(repository.getTransactions()).thenReturn(List.of(remainingTransaction));
+
+        //when
+        AccountDetails accountDetails = service.delete("2");
+        //then
+        InOrder inOrder = inOrder(repository);
+        inOrder.verify(repository).deleteTransaction("2"); //remember verify just check interactions
+        inOrder.verify(repository).getTransactions();
+    }
+
 
 }
