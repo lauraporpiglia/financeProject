@@ -6,6 +6,9 @@ import com.mentoring.mentoringprj.exceptions.AmountException;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,8 +22,7 @@ import static com.mentoring.mentoringprj.domain.TransactionType.CREDIT;
 import static com.mentoring.mentoringprj.domain.TransactionType.DEBIT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-public class JSONTransactionRepositoryTest {
+ class JSONTransactionRepositoryTest {
     private ObjectMapper objectMapper;
 
     @BeforeEach
@@ -49,10 +51,18 @@ public class JSONTransactionRepositoryTest {
         assertThat(transactions).isEmpty();
     }
 
-    @Test
+    /* @todo: ask- sonar suggest to use a parametrized test for folowing 3 exception tests
+     How do I check correct exception is thrown for each case in a single test?
+     @ParameterizedTest
+     @ValueSource(strings = {pathNAN, pathInvalidType, pathIncorrectAmoubnt}){
+
+    }*/
+
+
+     @Test
     void should_throw_corrected_exception_when_amount_isNAN() {
-        String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/amountNan.json";
-        JSONTransactionRepository repository = new JSONTransactionRepository(path,objectMapper);
+        String pathAmountNanJson = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/amountNan.json";
+        JSONTransactionRepository repository = new JSONTransactionRepository(pathAmountNanJson,objectMapper);
         TransactionReadException exception = assertThrows(TransactionReadException.class, repository::getTransactions);
 
         assertThat(exception).hasMessage("Data Type mismatch");
@@ -129,6 +139,4 @@ public class JSONTransactionRepositoryTest {
         newPath.toFile().getParentFile().mkdirs();
         Files.copy(originalPath, newPath, StandardCopyOption.REPLACE_EXISTING);
     }
-
-
 }

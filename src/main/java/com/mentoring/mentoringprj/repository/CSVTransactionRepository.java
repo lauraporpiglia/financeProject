@@ -11,7 +11,6 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
 import java.io.*;
@@ -67,8 +66,8 @@ public class CSVTransactionRepository implements TransactionRepository {
 
     private List<Transaction> createTransactionsFromRecords(List<String[]> records) throws TransactionReadException {
         List<Transaction> list = new ArrayList<>();
-        for (String[] record : records) {
-            Transaction apply = apply(record);
+        for (String[] singleRecord : records) {
+            Transaction apply = apply(singleRecord);
             list.add(apply);
         }
         return list;
@@ -86,14 +85,14 @@ public class CSVTransactionRepository implements TransactionRepository {
         return amount;
     }
 
-    private Transaction apply(String[] record) throws TransactionReadException {
+    private Transaction apply(String[] singleRecord) throws TransactionReadException {
         try {
             return Transaction.builder()
-                    .name(record[0])
-                    .amount(Long.parseLong(checkAmount(record[1])))
-                    .description(record[2])
-                    .date(LocalDateTime.parse(record[3]))
-                    .type(TransactionType.valueOf(record[4]))
+                    .name(singleRecord[0])
+                    .amount(Long.parseLong(checkAmount(singleRecord[1])))
+                    .description(singleRecord[2])
+                    .date(LocalDateTime.parse(singleRecord[3]))
+                    .type(TransactionType.valueOf(singleRecord[4]))
                     .build();
         } catch (IllegalArgumentException e) {
             throw new TransactionReadException("could not parse transaction type", e);

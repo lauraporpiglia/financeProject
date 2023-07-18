@@ -62,8 +62,7 @@ class CSVTransactionRepositoryTest {
 
         TransactionReadException exception = assertThrows(TransactionReadException.class, repository::getTransactions);
 
-        assertThat(exception).hasMessage("Incorrect amount");
-        assertThat(exception).hasCauseInstanceOf(AmountException.class);
+        assertThat(exception).hasMessage("Incorrect amount").hasCauseInstanceOf(AmountException.class);
     }
     @Test
     void should_throw_an_exception_when_add_transaction_from_CSV() throws Exception {

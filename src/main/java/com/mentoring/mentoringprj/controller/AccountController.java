@@ -4,7 +4,6 @@ import com.mentoring.mentoringprj.domain.AccountDetails;
 import com.mentoring.mentoringprj.domain.Transaction;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import com.mentoring.mentoringprj.service.AccountService;
-import jakarta.websocket.server.PathParam;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
