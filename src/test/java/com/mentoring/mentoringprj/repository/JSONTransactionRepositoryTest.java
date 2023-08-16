@@ -2,18 +2,13 @@ package com.mentoring.mentoringprj.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mentoring.mentoringprj.domain.Transaction;
-import com.mentoring.mentoringprj.exceptions.AmountException;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,7 +17,10 @@ import static com.mentoring.mentoringprj.domain.TransactionType.CREDIT;
 import static com.mentoring.mentoringprj.domain.TransactionType.DEBIT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
- class JSONTransactionRepositoryTest {
+
+class JSONTransactionRepositoryTest {
+    private static final String SRC_PATH = "./src/test/resources/transactions/";
+    private static final String BUILD_PATH = "./build/testout/";
     private ObjectMapper objectMapper;
 
     @BeforeEach
@@ -31,9 +29,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
     }
 
     @Test
-    void should_return_transactions() throws TransactionReadException, AmountException {
-        String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/goodTransactions.json";
-        JSONTransactionRepository repository = new JSONTransactionRepository(path,objectMapper);
+    void should_return_transactions() throws Exception {
+        String file = SRC_PATH.concat("goodTransactions.json");
+
+        JSONTransactionRepository repository = new JSONTransactionRepository(file, objectMapper);
         Transaction firstTransaction = Transaction.builder().id("1").name("transaction1").amount(300).date(LocalDateTime.parse("2023-03-15T13:14:15")).description("gold").type(DEBIT).build();
         Transaction secondTransaction = Transaction.builder().id("2").name("transaction2").amount(500).date(LocalDateTime.parse("2021-11-28T04:05:06")).description("silver").type(CREDIT).build();
 
@@ -43,9 +42,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
     }
 
     @Test
-    void should_not_return_an_empty_list_of_transactions_when_file_is_empty() throws TransactionReadException, AmountException {
-        String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/emptyFile.json";
-        JSONTransactionRepository repository = new JSONTransactionRepository(path,objectMapper);
+    void should_not_return_an_empty_list_of_transactions_when_file_is_empty() throws Exception {
+        String file = SRC_PATH.concat("emptyFile.json");
+        JSONTransactionRepository repository = new JSONTransactionRepository(file, objectMapper);
         List<Transaction> transactions = repository.getTransactions();
 
         assertThat(transactions).isEmpty();
@@ -59,10 +58,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
     }*/
 
 
-     @Test
+    @Test
     void should_throw_corrected_exception_when_amount_isNAN() {
-        String pathAmountNanJson = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/amountNan.json";
-        JSONTransactionRepository repository = new JSONTransactionRepository(pathAmountNanJson,objectMapper);
+        String file = SRC_PATH.concat("amountNan.json");
+        JSONTransactionRepository repository = new JSONTransactionRepository(file, objectMapper);
         TransactionReadException exception = assertThrows(TransactionReadException.class, repository::getTransactions);
 
         assertThat(exception).hasMessage("Data Type mismatch");
@@ -71,8 +70,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
     @Test
     void should_throw_correct_exception_when_type_is_not_credit_or_debit() {
-        String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/unknownType.json";
-        JSONTransactionRepository repository = new JSONTransactionRepository(path,objectMapper );
+        String file = SRC_PATH.concat("unknownType.json");
+        JSONTransactionRepository repository = new JSONTransactionRepository(file, objectMapper);
         TransactionReadException exception = assertThrows(TransactionReadException.class, repository::getTransactions);
 
         assertThat(exception).hasMessage("Data Type mismatch");
@@ -80,9 +79,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
     @Test
-    void should_throw_correct_exception_when_amount_is_zero_or_less() throws TransactionReadException, AmountException {
-        String path = "/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/emptyAmount.json";
-        JSONTransactionRepository repository = new JSONTransactionRepository(path,objectMapper);
+    void should_throw_correct_exception_when_amount_is_zero_or_less() {
+        String file = SRC_PATH.concat("emptyAmount.json");
+        JSONTransactionRepository repository = new JSONTransactionRepository(file, objectMapper);
 
         TransactionReadException exception = assertThrows(TransactionReadException.class, repository::getTransactions);
 
@@ -95,13 +94,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
     //insert a new transaction in that file and save it.
 
     @Test
-    void should_add_a_transaction() throws IOException, TransactionReadException {
+    void should_add_a_transaction() throws Exception {
         //given
-        Path originalPath = Path.of("/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/goodTransactions.json");
-        Path newPath = Path.of("/Users/lauraporpiglia/rides/mentoring/mentoringPrj/build/testout/goodTransactions.json");
-        copyFile(originalPath, newPath);
+        String originalFile = SRC_PATH.concat("goodTransactions.json");
+        String newFile = BUILD_PATH.concat("goodTransactions.json");
 
-        JSONTransactionRepository repository = new JSONTransactionRepository(newPath.toString(),objectMapper);
+        copyFile(originalFile, newFile);
+
+        JSONTransactionRepository repository = new JSONTransactionRepository(newFile, objectMapper);
         Transaction firstTransaction = Transaction.builder().id("1").name("transaction1").amount(300).date(LocalDateTime.parse("2023-03-15T13:14:15")).description("gold").type(DEBIT).build();
         Transaction secondTransaction = Transaction.builder().id("2").name("transaction2").amount(500).date(LocalDateTime.parse("2021-11-28T04:05:06")).description("silver").type(CREDIT).build();
         Transaction newTransaction = Transaction.builder().id("3").name("newTransaction").amount(123).type(DEBIT).build();
@@ -117,13 +117,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
     }
 
     @Test
-    void should_delete_a_transaction() throws IOException, TransactionReadException {
+    void should_delete_a_transaction() throws Exception {
         //given
-        Path originalPath = Path.of("/Users/lauraporpiglia/rides/mentoring/mentoringPrj/src/test/resources/transactions/deletableTransactions.json");
-        Path newPath = Path.of("/Users/lauraporpiglia/rides/mentoring/mentoringPrj/build/testout/deletableTransactions.json");
+        String originalPath = SRC_PATH.concat( "deletableTransactions.json");
+        String newPath = BUILD_PATH.concat( "deletableTransactions.json");
         copyFile(originalPath, newPath);
 
-        JSONTransactionRepository repository = new JSONTransactionRepository(newPath.toString(),objectMapper);
+        JSONTransactionRepository repository = new JSONTransactionRepository(newPath, objectMapper);
         Transaction firstTransaction = Transaction.builder().id("1").name("transaction1").amount(300).date(LocalDateTime.parse("2023-03-15T13:14:15")).description("gold").type(DEBIT).build();
         //when
         repository.deleteTransaction("2");
@@ -132,11 +132,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
         List<Transaction> transactions = repository.getTransactions();
 
         assertThat(transactions).containsExactly(firstTransaction);
-        /***@todo: id in all transactions files*/
+        //@todo: id in all transactions files
     }
 
-    private static void copyFile(Path originalPath, Path newPath) throws IOException {
+    private static void copyFile(String originalLocation, String newLocation) throws IOException {
+        Path originalPath = Path.of(originalLocation);
+        Path newPath = Path.of(newLocation);
+
         newPath.toFile().getParentFile().mkdirs();
         Files.copy(originalPath, newPath, StandardCopyOption.REPLACE_EXISTING);
     }
+
 }
