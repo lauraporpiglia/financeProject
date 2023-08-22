@@ -135,6 +135,33 @@ class JSONTransactionRepositoryTest {
         //@todo: id in all transactions files
     }
 
+    @Test
+    void should_return_A_single_transaction_ById() throws Exception {
+        String file = SRC_PATH.concat("goodTransactions.json");
+
+        JSONTransactionRepository repository = new JSONTransactionRepository(file, objectMapper);
+
+        Transaction selectedTransaction = Transaction.builder().id("2").name("transaction2").amount(500).date(LocalDateTime.parse("2021-11-28T04:05:06")).description("silver").type(CREDIT).build();
+
+        List<Transaction> transactions = repository.getTransactionsById("2");
+
+        assertThat(transactions).containsExactly(selectedTransaction);
+    }
+
+    @Test
+    void should_update_a_single_transaction() throws Exception{
+        String file = SRC_PATH.concat("updatedTransactions.json");
+
+        JSONTransactionRepository repository = new JSONTransactionRepository(file, objectMapper);
+
+        Transaction newTransaction = Transaction.builder().id("2").name("transaction2").amount(500).date(LocalDateTime.parse("2021-11-28T04:05:06")).description("silver").type(CREDIT).build();
+
+        List<Transaction> transactions = repository.getTransactionsById("2");
+        repository.updateTransaction(newTransaction);
+
+        assertThat(transactions).containsExactly(newTransaction);
+    }
+
     private static void copyFile(String originalLocation, String newLocation) throws IOException {
         Path originalPath = Path.of(originalLocation);
         Path newPath = Path.of(newLocation);

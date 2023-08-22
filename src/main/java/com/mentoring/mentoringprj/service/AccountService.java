@@ -68,4 +68,9 @@ public class AccountService {
         repository.deleteTransaction(transactionId);
         return getAccountDetails();
     }
+
+    public AccountDetails updateTransaction(Transaction transaction) throws TransactionReadException, IOException {
+        repository.updateTransaction(transaction);
+        return getAccountDetails();
+    }
 }

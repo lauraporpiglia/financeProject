@@ -1,14 +1,12 @@
 package com.mentoring.mentoringprj.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.mentoring.mentoringprj.domain.Transaction;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
 import java.io.FileOutputStream;
@@ -55,6 +53,13 @@ public class JSONTransactionRepository implements TransactionRepository {
     }
 
     @Override
+    public List<Transaction> getTransactionsById(String transactionId) throws TransactionReadException {
+       // List<Transaction> transactions = new ArrayList<>();
+      //  transactions.add(getTransactions().stream().filter(num -> num.equals(transactionId)).collect(Collectors.toList());
+        return getTransactions().stream().filter(num -> num.getId().equals(transactionId)).collect(Collectors.toList());
+    }
+
+    @Override
     public void addTransaction(Transaction transaction) throws TransactionReadException, IOException {
         List<Transaction> transactions = getTransactions();
         transactions.add(transaction);
@@ -85,6 +90,25 @@ public class JSONTransactionRepository implements TransactionRepository {
         outStream.write(bytes);
 
         IOUtils.closeQuietly(outStream);
+    }
+
+    @Override
+    public void updateTransaction(Transaction transaction) throws TransactionReadException, IOException {
+       //todo implement updateById method
+        List<Transaction> transactions = getTransactions();
+        transactions.add(transaction);
+
+        TransactionWrapper transWrapper = new TransactionWrapper();
+        transWrapper.setTransactions(transactions);
+
+        byte[] bytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(transWrapper);
+
+
+        OutputStream outStream = new FileOutputStream(path.toFile());
+        outStream.write(bytes);
+
+        IOUtils.closeQuietly(outStream);
+
     }
 
 

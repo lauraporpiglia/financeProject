@@ -26,16 +26,21 @@ public class AccountController {
             @RequestParam(name = "from", required = false) Optional<LocalDateTime> from,
             @RequestParam(name = "to", required = false) Optional<LocalDateTime> to) throws TransactionReadException {
 
-        return  accountService.getAccountDetails(from, to);
+        return accountService.getAccountDetails(from, to);
     }
 
     @PostMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public AccountDetails addTransaction(@RequestBody Transaction transaction) throws TransactionReadException, IOException {
-        return  accountService.addTransaction(transaction);
+        return accountService.addTransaction(transaction);
     }
 
     @DeleteMapping(path = "{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public AccountDetails deleteTransaction(@PathVariable("transactionId") String transactionId) throws TransactionReadException, IOException {
-        return  accountService.delete(transactionId);
+        return accountService.delete(transactionId);
+    }
+
+    @PutMapping(path = "/update/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public AccountDetails updateTransaction(@PathVariable("transactionId") String transactionId, @RequestBody Transaction transaction) throws TransactionReadException, IOException {
+        return accountService.updateTransaction(transaction);
     }
 }

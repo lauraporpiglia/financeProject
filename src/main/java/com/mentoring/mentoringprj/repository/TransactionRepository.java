@@ -8,7 +8,9 @@ import java.util.List;
 
 public interface TransactionRepository {
     List<Transaction> getTransactions() throws TransactionReadException;
+    List<Transaction> getTransactionsById(String transactionId) throws TransactionReadException;
 
     void addTransaction(Transaction transaction) throws TransactionReadException, IOException;
     void deleteTransaction(String id) throws TransactionReadException, IOException;
+    void updateTransaction(Transaction transaction) throws TransactionReadException, IOException;
 }

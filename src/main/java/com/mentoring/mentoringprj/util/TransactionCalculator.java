@@ -8,8 +8,8 @@ import java.util.List;
 
 @Component
 public class TransactionCalculator {
-  public  long calculateTotal(List<Transaction> transactions) {
-        long total=0;
+  public long calculateTotal(List<Transaction> transactions) {
+      long total=0;
         for (Transaction transaction : transactions) {
             if(TransactionType.CREDIT.equals(transaction.getType())) {
                 total += transaction.getAmount();
