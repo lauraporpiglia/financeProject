@@ -39,7 +39,8 @@ public class AccountController {
         return accountService.delete(transactionId);
     }
 
-    @PutMapping(path = "/update/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
+   //@todo pathvariable transactionid is already in the requestbody
+   @PutMapping(path = "/update/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public AccountDetails updateTransaction(@PathVariable("transactionId") String transactionId, @RequestBody Transaction transaction) throws TransactionReadException, IOException {
         return accountService.updateTransaction(transaction);
     }
