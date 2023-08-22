@@ -13,12 +13,5 @@
     "description" : "silver",
     "date" : [ 2021, 11, 28, 4, 5, 6 ],
     "type" : "CREDIT"
-  }, {
-    "id" : "2",
-    "name" : "transaction2",
-    "amount" : 500,
-    "description" : "silver",
-    "date" : [ 2021, 11, 28, 4, 5, 6 ],
-    "type" : "CREDIT"
-  } ]
+  }]
 }

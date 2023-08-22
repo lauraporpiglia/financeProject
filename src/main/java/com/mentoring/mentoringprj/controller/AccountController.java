@@ -2,6 +2,7 @@ package com.mentoring.mentoringprj.controller;
 
 import com.mentoring.mentoringprj.domain.AccountDetails;
 import com.mentoring.mentoringprj.domain.Transaction;
+import com.mentoring.mentoringprj.domain.TransactionUpdate;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import com.mentoring.mentoringprj.service.AccountService;
 import org.springframework.http.MediaType;
@@ -41,7 +42,7 @@ public class AccountController {
 
    //@todo pathvariable transactionid is already in the requestbody
    @PutMapping(path = "/update/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public AccountDetails updateTransaction(@PathVariable("transactionId") String transactionId, @RequestBody Transaction transaction) throws TransactionReadException, IOException {
-        return accountService.updateTransaction(transaction);
+    public AccountDetails updateTransaction(@PathVariable("transactionId") String transactionId, @RequestBody TransactionUpdate transaction) throws TransactionReadException, IOException {
+        return accountService.updateTransaction(transactionId,transaction);
     }
 }

@@ -54,9 +54,9 @@ public class JSONTransactionRepository implements TransactionRepository {
 
     @Override
     public List<Transaction> getTransactionsById(String transactionId) throws TransactionReadException {
-       // List<Transaction> transactions = new ArrayList<>();
-      //  transactions.add(getTransactions().stream().filter(num -> num.equals(transactionId)).collect(Collectors.toList());
-        return getTransactions().stream().filter(num -> num.getId().equals(transactionId)).collect(Collectors.toList());
+        return getTransactions().stream()
+                .filter(num -> num.getId().equals(transactionId))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -94,21 +94,8 @@ public class JSONTransactionRepository implements TransactionRepository {
 
     @Override
     public void updateTransaction(Transaction transaction) throws TransactionReadException, IOException {
-       //todo implement updateById method
-        List<Transaction> transactions = getTransactions();
-        transactions.add(transaction);
-
-        TransactionWrapper transWrapper = new TransactionWrapper();
-        transWrapper.setTransactions(transactions);
-
-        byte[] bytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(transWrapper);
-
-
-        OutputStream outStream = new FileOutputStream(path.toFile());
-        outStream.write(bytes);
-
-        IOUtils.closeQuietly(outStream);
-
+       deleteTransaction(transaction.getId());
+       addTransaction(transaction);
     }
 
 

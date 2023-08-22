@@ -2,6 +2,7 @@ package com.mentoring.mentoringprj.controller;
 
 import com.mentoring.mentoringprj.domain.AccountDetails;
 import com.mentoring.mentoringprj.domain.Transaction;
+import com.mentoring.mentoringprj.domain.TransactionUpdate;
 import com.mentoring.mentoringprj.domain.TransactionType;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import com.mentoring.mentoringprj.service.AccountService;
@@ -10,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -88,6 +86,24 @@ class AccountControllerIT {
 
         when(accountService.delete("2")).thenReturn(expectedAccountDetails);
         ResponseEntity<AccountDetails> response = restTemplate.exchange("/account/2", HttpMethod.DELETE, HttpEntity.EMPTY, AccountDetails.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
+        assertThat(response.getBody()).isEqualTo(expectedAccountDetails);
+    }
+    @Test
+    void should_update_a_transaction() throws TransactionReadException, IOException {
+        Transaction existingTransaction = Transaction.builder().id("1").amount(300).type(TransactionType.CREDIT).build();
+        Transaction transactionToUpdate = Transaction.builder().id("2").amount(150).type(TransactionType.CREDIT).build();
+        List<Transaction> expectedTransactions = List.of(existingTransaction,transactionToUpdate);
+        TransactionUpdate updateTransaction = TransactionUpdate.builder().amount(150).type(TransactionType.CREDIT).build();
+
+        AccountDetails expectedAccountDetails = AccountDetails.builder().balance(450).transactions(expectedTransactions).build();
+        when(accountService.updateTransaction(transactionToUpdate.getId(),updateTransaction)).thenReturn(expectedAccountDetails);
+        RequestEntity<TransactionUpdate> request = RequestEntity
+                .put("/account/update/{transactionId}",transactionToUpdate.getId())
+                .body(updateTransaction);
+
+        ResponseEntity<AccountDetails> response = restTemplate.exchange(request, AccountDetails.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
         assertThat(response.getBody()).isEqualTo(expectedAccountDetails);
