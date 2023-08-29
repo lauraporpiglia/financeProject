@@ -2,16 +2,23 @@ package com.mentoring.mentoringprj.util;
 
 import com.mentoring.mentoringprj.domain.Transaction;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 class TransactionFilterTest {
+
+    private static final String SEARCH_STRING = "matching";
+
     @Test
     void should_return_empty_list() {
         //GIVEN
@@ -44,7 +51,106 @@ class TransactionFilterTest {
 
         List<Transaction> results = filter.getTransactionsBetween(allTransactions, fromDate, toDate);
 
-        assertThat(results).containsExactly(earlyInTimeWindowTransaction, middleTransaction,lateInTimeWindowTransaction);
+        assertThat(results).containsExactly(earlyInTimeWindowTransaction, middleTransaction, lateInTimeWindowTransaction);
     }
 
+    @Test
+    void should_return_transactions_when_name_matches() {
+        TransactionFilter filter = new TransactionFilter();
+        Transaction matchingTransaction = Transaction.builder().name("matching transaction").description("description").build();
+        Transaction otherTransaction = Transaction.builder().name("wrong transaction").description("description").build();
+        List<Transaction> results = filter.getFilteredTransactionByNameOrDescription(List.of(matchingTransaction, otherTransaction), SEARCH_STRING);
+
+        assertThat(results).containsExactly(matchingTransaction);
+    }
+
+    @Test
+    void should_return_transactions_when_description_matches() {
+        TransactionFilter filter = new TransactionFilter();
+        Transaction matchingTransaction = Transaction.builder().name("name").description("matching description").build();
+        Transaction otherTransaction = Transaction.builder().name("name").description("wrong description").build();
+        List<Transaction> results = filter.getFilteredTransactionByNameOrDescription(List.of(matchingTransaction, otherTransaction), SEARCH_STRING);
+
+        assertThat(results).containsExactly(matchingTransaction);
+    }
+
+    //transaction with same search string both in name and desc
+    //multiple transaction returned with search strings
+    //case sensitive matching
+    @Test
+    void should_return_single_transaction_when_both_name_and_description_match() {
+        TransactionFilter filter = new TransactionFilter();
+        Transaction matchingTransaction = Transaction.builder().name("matching name").description("matching description").build();
+        Transaction otherTransaction = Transaction.builder().name("name").description("wrong description").build();
+        List<Transaction> results = filter.getFilteredTransactionByNameOrDescription(List.of(matchingTransaction, otherTransaction), SEARCH_STRING);
+
+        assertThat(results).containsExactly(matchingTransaction);
+    }
+
+    @Test
+    void should_return_multiple_transaction_when_both_name_and_description_match() {
+        TransactionFilter filter = new TransactionFilter();
+        Transaction matchingTransaction1 = Transaction.builder().name("matching name").description("description").build();
+        Transaction matchingTransaction2 = Transaction.builder().name("name").description("matching description").build();
+        Transaction otherTransaction = Transaction.builder().name("name").description("wrong description").build();
+        List<Transaction> results = filter.getFilteredTransactionByNameOrDescription(List.of(matchingTransaction1, matchingTransaction2, otherTransaction), SEARCH_STRING);
+
+        assertThat(results).containsExactly(matchingTransaction1, matchingTransaction2);
+    }
+
+    @Test
+    void should_return_transaction_when_name_case_doesnt_match() {
+        TransactionFilter filter = new TransactionFilter();
+        Transaction matchingTransaction1 = Transaction.builder().name("MATCHING name").description("description").build();
+        Transaction otherTransaction = Transaction.builder().name("name").description("wrong description").build();
+        List<Transaction> results = filter.getFilteredTransactionByNameOrDescription(List.of(matchingTransaction1, otherTransaction), SEARCH_STRING);
+
+        assertThat(results).containsExactly(matchingTransaction1);
+    }
+
+    @Test
+    void should_return_transaction_when_desc_case_doesnt_match() {
+        TransactionFilter filter = new TransactionFilter();
+        Transaction matchingTransaction1 = Transaction.builder().name("right name").description("MATCHING description").build();
+        Transaction otherTransaction = Transaction.builder().name("wrong name").description("wrong description").build();
+        List<Transaction> results = filter.getFilteredTransactionByNameOrDescription(List.of(matchingTransaction1, otherTransaction), SEARCH_STRING);
+
+        assertThat(results).containsExactly(matchingTransaction1);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideNameFilterScenarios")
+    void test_get_filtered_transactions_by_name(String name, String description, String search, boolean isTransactionMatching) {
+        TransactionFilter filter = new TransactionFilter();
+        Transaction transactionToMatch = Transaction.builder().name(name).description(description).build();
+        Transaction otherTransaction = Transaction.builder().name("wrong name").description("wrong description").build();
+        List<Transaction> results = filter.getFilteredTransactionByNameOrDescription(List.of(transactionToMatch, otherTransaction), search);
+
+        if(isTransactionMatching){
+            assertThat(results).containsExactly(transactionToMatch);
+        } else{
+            assertThat(results).isEmpty();
+        }
+
+    }
+
+    private static Stream<Arguments> provideNameFilterScenarios() {
+
+        return Stream.of(
+                Arguments.of("matching name","description","matching", true),
+                Arguments.of("matching name","description","Matching", true),
+                Arguments.of("matching name","description","MATCHING", true),
+                Arguments.of("MATCHING name","description","matching", true),
+                Arguments.of("MATCHING name","description","pie", false),
+
+                Arguments.of("name","matching description","matching", true),
+                Arguments.of("name","matching description","Matching", true),
+                Arguments.of("name","matching description","MATCHING", true),
+                Arguments.of("name","MATCHING description","matching", true),
+                Arguments.of("name","MATCHING description","pie", false)
+
+        );
+
+    }
 }
+
