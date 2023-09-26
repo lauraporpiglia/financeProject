@@ -5,6 +5,9 @@ import com.mentoring.mentoringprj.domain.Transaction;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static com.mentoring.mentoringprj.domain.TransactionType.CREDIT;
 import static com.mentoring.mentoringprj.domain.TransactionType.DEBIT;
@@ -49,43 +53,16 @@ class JSONTransactionRepositoryTest {
 
         assertThat(transactions).isEmpty();
     }
+    @ParameterizedTest
+    @MethodSource("provideExceptionsScenarios")
+    void should_Throw_TransactionReadException(String file, String exceptionMessage){
 
-    /* @todo: ask- sonar suggest to use a parametrized test for folowing 3 exception tests
-     How do I check correct exception is thrown for each case in a single test?
-     @ParameterizedTest
-     @ValueSource(strings = {pathNAN, pathInvalidType, pathIncorrectAmoubnt}){
+        String fullPath = SRC_PATH.concat(file);
+        TransactionRepository repository = new JSONTransactionRepository(fullPath, objectMapper);
+        Exception exception = assertThrows(TransactionReadException.class, repository::getTransactions);
 
-    }*/
+        assertThat(exception).hasMessage(exceptionMessage);
 
-
-    @Test
-    void should_throw_corrected_exception_when_amount_isNAN() {
-        String file = SRC_PATH.concat("amountNan.json");
-        JSONTransactionRepository repository = new JSONTransactionRepository(file, objectMapper);
-        TransactionReadException exception = assertThrows(TransactionReadException.class, repository::getTransactions);
-
-        assertThat(exception).hasMessage("Data Type mismatch");
-    }
-
-
-    @Test
-    void should_throw_correct_exception_when_type_is_not_credit_or_debit() {
-        String file = SRC_PATH.concat("unknownType.json");
-        JSONTransactionRepository repository = new JSONTransactionRepository(file, objectMapper);
-        TransactionReadException exception = assertThrows(TransactionReadException.class, repository::getTransactions);
-
-        assertThat(exception).hasMessage("Data Type mismatch");
-    }
-
-
-    @Test
-    void should_throw_correct_exception_when_amount_is_zero_or_less() {
-        String file = SRC_PATH.concat("emptyAmount.json");
-        JSONTransactionRepository repository = new JSONTransactionRepository(file, objectMapper);
-
-        TransactionReadException exception = assertThrows(TransactionReadException.class, repository::getTransactions);
-
-        assertThat(exception).hasMessage("Incorrect amount");
     }
 
     //create a empty dir
@@ -112,8 +89,6 @@ class JSONTransactionRepositoryTest {
         List<Transaction> transactions = repository.getTransactions();
 
         assertThat(transactions).containsExactly(firstTransaction, secondTransaction, newTransaction);
-
-
     }
 
     @Test
@@ -172,5 +147,14 @@ class JSONTransactionRepositoryTest {
         newPath.toFile().getParentFile().mkdirs();
         Files.copy(originalPath, newPath, StandardCopyOption.REPLACE_EXISTING);
     }
+    private static Stream<Arguments> provideExceptionsScenarios() {
+
+        return Stream.of(
+                Arguments.of("amountNan.json",  "Data Type mismatch"),
+                Arguments.of("unknownType.json",  "Data Type mismatch"),
+                Arguments.of("emptyAmount.json",  "Incorrect amount")
+        );
+    }
+
 
 }

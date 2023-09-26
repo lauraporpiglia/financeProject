@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 @Qualifier("csv")
 @Repository
@@ -56,7 +57,7 @@ public class CSVTransactionRepository implements TransactionRepository {
 
     @Override
     public List<Transaction> getTransactionsById(String transactionId) throws TransactionReadException {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override

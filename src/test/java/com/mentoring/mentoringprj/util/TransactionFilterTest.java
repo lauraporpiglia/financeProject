@@ -64,6 +64,7 @@ class TransactionFilterTest {
 
         assertThat(results).containsExactly(matchingTransaction1, matchingTransaction2);
     }
+
     @ParameterizedTest
     @MethodSource("provideNameFilterScenarios")
     void test_get_filtered_transactions_by_name(String name, String description, String search, boolean isTransactionMatching) {
@@ -72,33 +73,30 @@ class TransactionFilterTest {
         Transaction otherTransaction = Transaction.builder().name("wrong name").description("wrong description").build();
         List<Transaction> results = filter.getFilteredTransactionByNameOrDescription(List.of(transactionToMatch, otherTransaction), search);
 
-        if(isTransactionMatching){
+        if (isTransactionMatching) {
             assertThat(results).containsExactly(transactionToMatch);
-        } else{
+        } else {
             assertThat(results).isEmpty();
         }
 
     }
 
     private static Stream<Arguments> provideNameFilterScenarios() {
-
         return Stream.of(
-                Arguments.of("matching name","description","matching", true),
-                Arguments.of("matching name","description","Matching", true),
-                Arguments.of("matching name","description","MATCHING", true),
-                Arguments.of("MATCHING name","description","matching", true),
-                Arguments.of("MATCHING name","description","pie", false),
+                Arguments.of("matching name", "description", "matching", true),
+                Arguments.of("matching name", "description", "Matching", true),
+                Arguments.of("matching name", "description", "MATCHING", true),
+                Arguments.of("MATCHING name", "description", "matching", true),
+                Arguments.of("MATCHING name", "description", "pie", false),
 
-                Arguments.of("name","matching description","matching", true),
-                Arguments.of("name","matching description","Matching", true),
-                Arguments.of("name","matching description","MATCHING", true),
-                Arguments.of("name","MATCHING description","matching", true),
-                Arguments.of("name","MATCHING description","pie", false),
+                Arguments.of("name", "matching description", "matching", true),
+                Arguments.of("name", "matching description", "Matching", true),
+                Arguments.of("name", "matching description", "MATCHING", true),
+                Arguments.of("name", "MATCHING description", "matching", true),
+                Arguments.of("name", "MATCHING description", "pie", false),
 
-                Arguments.of("matching name","matching description","matching", true)
-
+                Arguments.of("matching name", "matching description", "matching", true)
         );
-
     }
 }
 

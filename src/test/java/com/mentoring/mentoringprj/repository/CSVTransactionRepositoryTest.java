@@ -15,6 +15,7 @@ import static com.mentoring.mentoringprj.domain.TransactionType.DEBIT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+
 class CSVTransactionRepositoryTest {
 
     @Test
@@ -67,10 +68,13 @@ class CSVTransactionRepositoryTest {
     @Test
     void should_throw_an_exception_when_add_transaction_from_CSV()  {
         String path = "./src/test/resources/transactions/goodTransactions.csv";
-        CSVTransactionRepository repository = new CSVTransactionRepository(path);
+        CSVTransactionRepository repository;
+        repository = new CSVTransactionRepository(path);
 
         UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
-                () -> repository.addTransaction(Transaction.builder().build()));
+                () -> {
+                    repository.addTransaction(Transaction.builder().build());
+                });
 
 
         assertThat(exception).hasMessage("Can't add a transaction using CSV repository");
