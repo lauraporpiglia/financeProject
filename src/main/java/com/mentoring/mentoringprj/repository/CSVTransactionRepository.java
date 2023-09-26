@@ -2,6 +2,7 @@ package com.mentoring.mentoringprj.repository;
 
 import com.mentoring.mentoringprj.domain.Transaction;
 import com.mentoring.mentoringprj.domain.TransactionType;
+import com.mentoring.mentoringprj.domain.TransactionWithoutId;
 import com.mentoring.mentoringprj.exceptions.AmountException;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import com.opencsv.CSVParser;
@@ -62,6 +63,11 @@ public class CSVTransactionRepository implements TransactionRepository {
 
     @Override
     public void addTransaction(Transaction transaction) {
+        throw new UnsupportedOperationException("Can't add a transaction using CSV repository");
+    }
+
+    @Override
+    public void addTransaction(TransactionWithoutId transaction) throws TransactionReadException, IOException {
         throw new UnsupportedOperationException("Can't add a transaction using CSV repository");
     }
 

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TransactionUpdate {
+public class TransactionWithoutId {
     private String name;
     private long amount;
     private String description;

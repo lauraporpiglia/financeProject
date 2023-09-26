@@ -2,6 +2,7 @@ package com.mentoring.mentoringprj.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mentoring.mentoringprj.domain.Transaction;
+import com.mentoring.mentoringprj.domain.TransactionWithoutId;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,9 +54,10 @@ class JSONTransactionRepositoryTest {
 
         assertThat(transactions).isEmpty();
     }
+
     @ParameterizedTest
     @MethodSource("provideExceptionsScenarios")
-    void should_Throw_TransactionReadException(String file, String exceptionMessage){
+    void should_Throw_TransactionReadException(String file, String exceptionMessage) {
 
         String fullPath = SRC_PATH.concat(file);
         TransactionRepository repository = new JSONTransactionRepository(fullPath, objectMapper);
@@ -92,10 +94,38 @@ class JSONTransactionRepositoryTest {
     }
 
     @Test
+    void should_add_a_transactionWithoutId() throws Exception {
+        //given
+        String originalFile = SRC_PATH.concat("goodTransactions.json");
+        String newFile = BUILD_PATH.concat("goodTransactions.json");
+
+        copyFile(originalFile, newFile);
+
+        JSONTransactionRepository repository = new JSONTransactionRepository(newFile, objectMapper);
+        Transaction firstTransaction = Transaction.builder().id("1").name("transaction1").amount(300).date(LocalDateTime.parse("2023-03-15T13:14:15")).description("gold").type(DEBIT).build();
+        Transaction secondTransaction = Transaction.builder().id("2").name("transaction2").amount(500).date(LocalDateTime.parse("2021-11-28T04:05:06")).description("silver").type(CREDIT).build();
+
+        TransactionWithoutId newTransaction = TransactionWithoutId.builder().name("newTransaction").amount(123).type(DEBIT).build();
+        Transaction savedNewTransaction = Transaction.builder().name(newTransaction.getName()).amount(newTransaction.getAmount()).type(newTransaction.getType()).build();
+        //when
+        repository.addTransaction(newTransaction);
+
+        //then
+        List<Transaction> transactions = repository.getTransactions();
+
+        assertThat(transactions).hasSize(3);
+        assertThat(transactions).contains(firstTransaction,secondTransaction);
+        assertThat(transactions)
+                .usingRecursiveFieldByFieldElementComparatorIgnoringFields("id")
+                .contains(savedNewTransaction);
+   /*@todo: assert savedNewTransaction Id*/
+    }
+
+    @Test
     void should_delete_a_transaction() throws Exception {
         //given
-        String originalPath = SRC_PATH.concat( "deletableTransactions.json");
-        String newPath = BUILD_PATH.concat( "deletableTransactions.json");
+        String originalPath = SRC_PATH.concat("deletableTransactions.json");
+        String newPath = BUILD_PATH.concat("deletableTransactions.json");
         copyFile(originalPath, newPath);
 
         JSONTransactionRepository repository = new JSONTransactionRepository(newPath, objectMapper);
@@ -124,7 +154,7 @@ class JSONTransactionRepositoryTest {
     }
 
     @Test
-    void should_update_a_single_transaction() throws Exception{
+    void should_update_a_single_transaction() throws Exception {
         String originalFile = SRC_PATH.concat("updatedTransactions.json");
         String newFile = BUILD_PATH.concat("updatedTransactions.json");
 
@@ -137,7 +167,7 @@ class JSONTransactionRepositoryTest {
         repository.updateTransaction(newTransaction);
 
         List<Transaction> transactions = repository.getTransactions();
-        assertThat(transactions).containsExactly(firstTransaction,newTransaction);
+        assertThat(transactions).containsExactly(firstTransaction, newTransaction);
     }
 
     private static void copyFile(String originalLocation, String newLocation) throws IOException {
@@ -147,12 +177,13 @@ class JSONTransactionRepositoryTest {
         newPath.toFile().getParentFile().mkdirs();
         Files.copy(originalPath, newPath, StandardCopyOption.REPLACE_EXISTING);
     }
+
     private static Stream<Arguments> provideExceptionsScenarios() {
 
         return Stream.of(
-                Arguments.of("amountNan.json",  "Data Type mismatch"),
-                Arguments.of("unknownType.json",  "Data Type mismatch"),
-                Arguments.of("emptyAmount.json",  "Incorrect amount")
+                Arguments.of("amountNan.json", "Data Type mismatch"),
+                Arguments.of("unknownType.json", "Data Type mismatch"),
+                Arguments.of("emptyAmount.json", "Incorrect amount")
         );
     }
 

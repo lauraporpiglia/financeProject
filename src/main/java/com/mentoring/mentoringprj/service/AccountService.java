@@ -2,7 +2,7 @@ package com.mentoring.mentoringprj.service;
 
 import com.mentoring.mentoringprj.domain.AccountDetails;
 import com.mentoring.mentoringprj.domain.Transaction;
-import com.mentoring.mentoringprj.domain.TransactionUpdate;
+import com.mentoring.mentoringprj.domain.TransactionWithoutId;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import com.mentoring.mentoringprj.repository.TransactionRepository;
 import com.mentoring.mentoringprj.util.LocalDateTimeProvider;
@@ -70,7 +70,7 @@ public class AccountService {
         return getAccountDetails();
     }
 
-    public AccountDetails updateTransaction(String id, TransactionUpdate transactionToUpdate) throws TransactionReadException, IOException {
+    public AccountDetails updateTransaction(String id, TransactionWithoutId transactionToUpdate) throws TransactionReadException, IOException {
         Transaction transaction = Transaction.builder()
                 .id(id)
                 .name(transactionToUpdate.getName())

@@ -1,6 +1,7 @@
 package com.mentoring.mentoringprj.repository;
 
 import com.mentoring.mentoringprj.domain.Transaction;
+import com.mentoring.mentoringprj.domain.TransactionWithoutId;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 
 import java.io.IOException;
@@ -11,6 +12,7 @@ public interface TransactionRepository {
     List<Transaction> getTransactionsById(String transactionId) throws TransactionReadException;
 
     void addTransaction(Transaction transaction) throws TransactionReadException, IOException;
+    void addTransaction(TransactionWithoutId transaction) throws TransactionReadException, IOException;
     void deleteTransaction(String id) throws TransactionReadException, IOException;
     void updateTransaction(Transaction transaction) throws TransactionReadException, IOException;
 }

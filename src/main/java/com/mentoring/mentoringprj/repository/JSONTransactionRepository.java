@@ -3,6 +3,7 @@ package com.mentoring.mentoringprj.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.mentoring.mentoringprj.domain.Transaction;
+import com.mentoring.mentoringprj.domain.TransactionWithoutId;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,6 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Repository
@@ -74,6 +76,19 @@ public class JSONTransactionRepository implements TransactionRepository {
         outStream.write(bytes);
 
         IOUtils.closeQuietly(outStream);
+    }
+
+    @Override
+    public void addTransaction(TransactionWithoutId transaction) throws TransactionReadException, IOException {
+        Transaction transactionToAdd = Transaction.builder().id(UUID.randomUUID().toString())
+                .type(transaction.getType())
+                .description(transaction.getDescription())
+                .name(transaction.getName())
+                .amount(transaction.getAmount())
+                .date(transaction.getDate())
+                .build();
+
+        addTransaction(transactionToAdd);
     }
 
     @Override

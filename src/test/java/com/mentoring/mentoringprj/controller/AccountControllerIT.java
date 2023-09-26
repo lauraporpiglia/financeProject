@@ -2,7 +2,7 @@ package com.mentoring.mentoringprj.controller;
 
 import com.mentoring.mentoringprj.domain.AccountDetails;
 import com.mentoring.mentoringprj.domain.Transaction;
-import com.mentoring.mentoringprj.domain.TransactionUpdate;
+import com.mentoring.mentoringprj.domain.TransactionWithoutId;
 import com.mentoring.mentoringprj.domain.TransactionType;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import com.mentoring.mentoringprj.service.AccountService;
@@ -95,11 +95,11 @@ class AccountControllerIT {
         Transaction existingTransaction = Transaction.builder().id("1").amount(300).type(TransactionType.CREDIT).build();
         Transaction transactionToUpdate = Transaction.builder().id("2").amount(150).type(TransactionType.CREDIT).build();
         List<Transaction> expectedTransactions = List.of(existingTransaction,transactionToUpdate);
-        TransactionUpdate updateTransaction = TransactionUpdate.builder().amount(150).type(TransactionType.CREDIT).build();
+        TransactionWithoutId updateTransaction = TransactionWithoutId.builder().amount(150).type(TransactionType.CREDIT).build();
 
         AccountDetails expectedAccountDetails = AccountDetails.builder().balance(450).transactions(expectedTransactions).build();
         when(accountService.updateTransaction(transactionToUpdate.getId(),updateTransaction)).thenReturn(expectedAccountDetails);
-        RequestEntity<TransactionUpdate> request = RequestEntity
+        RequestEntity<TransactionWithoutId> request = RequestEntity
                 .put("/account/update/{transactionId}",transactionToUpdate.getId())
                 .body(updateTransaction);
 
