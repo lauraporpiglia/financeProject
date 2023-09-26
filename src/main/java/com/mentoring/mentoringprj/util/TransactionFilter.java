@@ -28,25 +28,14 @@ public class TransactionFilter {
     }
 
     public List<Transaction> getFilteredTransactionByNameOrDescription(List<Transaction> transactions, String search) {
-        Set<Transaction> filteredResults = new HashSet<>();
+        return transactions.stream()
+                .filter(transaction -> {
+                    boolean nameMatches = transaction.getName().toLowerCase().contains(search.toLowerCase());
+                    boolean descriptionMatches = transaction.getDescription().toLowerCase().contains(search.toLowerCase());
 
-
-        List<Transaction> nameResults = transactions.stream()
-                .filter(transaction -> transaction.getName().toLowerCase().contains(search.toLowerCase()))
+                    return nameMatches || descriptionMatches;
+                })
                 .toList();
-
-
-        List<Transaction> descResults = transactions.stream()
-                .filter(transaction -> transaction.getDescription().toLowerCase().contains(search.toLowerCase()))
-                .toList();
-
-        filteredResults.addAll(nameResults);
-        filteredResults.addAll(descResults);
-
-
-        return filteredResults.stream().toList();
-
     }
-
 
 }
