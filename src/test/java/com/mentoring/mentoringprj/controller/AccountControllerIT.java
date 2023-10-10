@@ -67,11 +67,12 @@ class AccountControllerIT {
     void should_add_transactions() throws TransactionReadException, IOException {
         Transaction existingTransaction = Transaction.builder().amount(300).type(TransactionType.CREDIT).build();
         Transaction newTransaction = Transaction.builder().amount(150).type(TransactionType.CREDIT).build();
+        TransactionWithoutId newTransactionWithoutId = TransactionWithoutId.builder().amount(150).type(TransactionType.CREDIT).build();
         List<Transaction> expectedTransactions = List.of(existingTransaction,newTransaction);
         AccountDetails expectedAccountDetails = AccountDetails.builder().balance(450).transactions(expectedTransactions).build();
-        when(accountService.addTransaction(newTransaction)).thenReturn(expectedAccountDetails);
+        when(accountService.addTransaction(newTransactionWithoutId)).thenReturn(expectedAccountDetails);
 
-        ResponseEntity<AccountDetails> response = restTemplate.postForEntity("/account", newTransaction, AccountDetails.class);
+        ResponseEntity<AccountDetails> response = restTemplate.postForEntity("/account", newTransactionWithoutId, AccountDetails.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
         assertThat(response.getBody()).isEqualTo(expectedAccountDetails);

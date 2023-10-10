@@ -12,7 +12,6 @@ public interface TransactionRepository {
     List<Transaction> getTransactionsById(String transactionId) throws TransactionReadException;
 
     void addTransaction(Transaction transaction) throws TransactionReadException, IOException;
-    void addTransaction(TransactionWithoutId transaction) throws TransactionReadException, IOException;
     void deleteTransaction(String id) throws TransactionReadException, IOException;
     void updateTransaction(Transaction transaction) throws TransactionReadException, IOException;
 }

@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AccountService {
@@ -59,8 +60,15 @@ public class AccountService {
         return getAccountDetails(Optional.empty(), Optional.empty());
     }
 
-    public AccountDetails addTransaction(Transaction transaction) throws TransactionReadException, IOException {
-        repository.addTransaction(transaction);
+    public AccountDetails addTransaction(TransactionWithoutId transaction) throws TransactionReadException, IOException {
+        Transaction transactionToAdd = Transaction.builder().id(UUID.randomUUID().toString())
+                .type(transaction.getType())
+                .description(transaction.getDescription())
+                .name(transaction.getName())
+                .amount(transaction.getAmount())
+                .date(transaction.getDate())
+                .build();
+        repository.addTransaction(transactionToAdd);
         return getAccountDetails();
     }
 

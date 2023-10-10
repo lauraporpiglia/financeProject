@@ -3,6 +3,7 @@ package com.mentoring.mentoringprj.service;
 import com.mentoring.mentoringprj.domain.AccountDetails;
 import com.mentoring.mentoringprj.domain.Transaction;
 import com.mentoring.mentoringprj.domain.TransactionType;
+import com.mentoring.mentoringprj.domain.TransactionWithoutId;
 import com.mentoring.mentoringprj.exceptions.AmountException;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import com.mentoring.mentoringprj.repository.TransactionRepository;
@@ -12,6 +13,7 @@ import com.mentoring.mentoringprj.util.TransactionFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -118,15 +120,20 @@ class AccountServiceTest {
     @Test
     void should_call_repository_correctly_when_adding_a_transaction() throws Exception{
         //given
-        Transaction newTransaction = Transaction.builder().type(TransactionType.CREDIT).amount(200).build();
 
+        TransactionWithoutId newTransactionWithoutId = TransactionWithoutId.builder().type(TransactionType.CREDIT).amount(200).build();
+        ArgumentCaptor<Transaction> transactionCaptor = ArgumentCaptor.forClass(Transaction.class);
         //when
-        service.addTransaction(newTransaction);
+        service.addTransaction(newTransactionWithoutId);
 
         //then
         InOrder inOrder = inOrder(repository);
-        inOrder.verify(repository).addTransaction(newTransaction); //remember verify just check interactions
+        inOrder.verify(repository).addTransaction(transactionCaptor.capture()); //remember verify just check interactions
         inOrder.verify(repository).getTransactions();
+        Transaction addedTransaction = transactionCaptor.getValue();
+        assertThat(addedTransaction.getType()).isEqualTo(newTransactionWithoutId.getType());
+        assertThat(addedTransaction.getAmount()).isEqualTo(newTransactionWithoutId.getAmount());
+        assertThat(addedTransaction.getId()).isNotNull();
     }
 
     @Test
@@ -134,13 +141,20 @@ class AccountServiceTest {
         //given
         Transaction existingTransaction = Transaction.builder().type(TransactionType.CREDIT).amount(300).build();
         Transaction newTransaction = Transaction.builder().type(TransactionType.CREDIT).amount(200).build();
+        TransactionWithoutId newTransactionWithoutId = TransactionWithoutId.builder().type(TransactionType.CREDIT).amount(200).build();
+        ArgumentCaptor<Transaction> transactionCaptor = ArgumentCaptor.forClass(Transaction.class);
         when(repository.getTransactions()).thenReturn(List.of(existingTransaction, newTransaction));
 
         //when
-        AccountDetails accountDetails = service.addTransaction(newTransaction);
+        AccountDetails accountDetails = service.addTransaction(newTransactionWithoutId);
 
         //then
-        verify(repository).addTransaction(newTransaction); //remember verify just check interactions
+        verify(repository).addTransaction(transactionCaptor.capture()); //remember verify just check interactions
+        Transaction addedTransaction = transactionCaptor.getValue();
+        assertThat(addedTransaction.getType()).isEqualTo(newTransactionWithoutId.getType());
+        assertThat(addedTransaction.getAmount()).isEqualTo(newTransactionWithoutId.getAmount());
+        assertThat(addedTransaction.getId()).isNotNull();
+
         assertThat(accountDetails.getTransactions()).containsExactly(existingTransaction, newTransaction);
         assertThat(accountDetails.getBalance()).isEqualTo(500);
     }

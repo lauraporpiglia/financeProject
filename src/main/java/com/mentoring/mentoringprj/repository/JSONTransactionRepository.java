@@ -79,19 +79,6 @@ public class JSONTransactionRepository implements TransactionRepository {
     }
 
     @Override
-    public void addTransaction(TransactionWithoutId transaction) throws TransactionReadException, IOException {
-        Transaction transactionToAdd = Transaction.builder().id(UUID.randomUUID().toString())
-                .type(transaction.getType())
-                .description(transaction.getDescription())
-                .name(transaction.getName())
-                .amount(transaction.getAmount())
-                .date(transaction.getDate())
-                .build();
-
-        addTransaction(transactionToAdd);
-    }
-
-    @Override
     public void deleteTransaction(String id) throws TransactionReadException, IOException {
         List<Transaction> transactions = getTransactions();
         List<Transaction> filteredTransactions = transactions.stream().filter(transaction ->!transaction.getId().equals(id)).toList();

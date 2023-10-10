@@ -105,7 +105,7 @@ class JSONTransactionRepositoryTest {
         Transaction firstTransaction = Transaction.builder().id("1").name("transaction1").amount(300).date(LocalDateTime.parse("2023-03-15T13:14:15")).description("gold").type(DEBIT).build();
         Transaction secondTransaction = Transaction.builder().id("2").name("transaction2").amount(500).date(LocalDateTime.parse("2021-11-28T04:05:06")).description("silver").type(CREDIT).build();
 
-        TransactionWithoutId newTransaction = TransactionWithoutId.builder().name("newTransaction").amount(123).type(DEBIT).build();
+        Transaction newTransaction = Transaction.builder().name("newTransaction").amount(123).type(DEBIT).build();
         Transaction savedNewTransaction = Transaction.builder().name(newTransaction.getName()).amount(newTransaction.getAmount()).type(newTransaction.getType()).build();
         //when
         repository.addTransaction(newTransaction);

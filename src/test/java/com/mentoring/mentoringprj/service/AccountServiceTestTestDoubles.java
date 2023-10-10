@@ -126,10 +126,11 @@ class AccountServiceTestTestDoubles {
     @Test
     void should_call_repository_correctly_when_adding_a_transaction() throws Exception {
         //given
+        TransactionWithoutId newTransactionNoId = TransactionWithoutId.builder().type(TransactionType.CREDIT).amount(200).build();
         Transaction newTransaction = Transaction.builder().type(TransactionType.CREDIT).amount(200).build();
 
         //when
-        subject.addTransaction(newTransaction);
+        subject.addTransaction(newTransactionNoId);
 
         //then
         InOrder inOrder = inOrder(repository);
@@ -142,10 +143,11 @@ class AccountServiceTestTestDoubles {
         //given
         Transaction existingTransaction = Transaction.builder().type(TransactionType.CREDIT).amount(300).build();
         Transaction newTransaction = Transaction.builder().type(TransactionType.CREDIT).amount(200).build();
+        TransactionWithoutId newTransactionNoId = TransactionWithoutId.builder().type(TransactionType.CREDIT).amount(200).build();
         setUp(List.of(existingTransaction, newTransaction));
 
         //when
-        AccountDetails accountDetails = subject.addTransaction(newTransaction);
+        AccountDetails accountDetails = subject.addTransaction(newTransactionNoId);
         // accountDetails = service.addTransaction(newTransaction);
 
         //then
@@ -211,11 +213,6 @@ class AccountServiceTestTestDoubles {
         @Override
         public void addTransaction(Transaction transaction) throws TransactionReadException, IOException {
             addedTransactions.add(transaction);
-        }
-
-        @Override
-        public void addTransaction(TransactionWithoutId transaction) throws TransactionReadException, IOException {
-
         }
 
         @Override
