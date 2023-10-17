@@ -14,13 +14,6 @@
     "date" : "2021-11-28T04:05:06",
     "type" : "CREDIT"
   }, {
-    "id" : "3",
-    "name" : "transaction3",
-    "amount" : 100,
-    "description" : "gold",
-    "date" : "2023-03-15T13:14:15",
-    "type" : "DEBIT"
-  }, {
     "id" : "4",
     "name" : "transaction4",
     "amount" : 10000,
@@ -28,11 +21,18 @@
     "date" : "2023-03-15T13:14:15",
     "type" : "CREDIT"
   }, {
-    "id" : "5",
-    "name" : "transaction5",
-    "amount" : 79000,
+    "id" : "2bf372d1-7379-42df-816a-c09614904f34",
+    "name" : "transaction6",
+    "amount" : 15000,
     "description" : "gold",
-    "date" : "2023-03-15T13:14:15",
+    "date" : "2023-08-15T13:14:15",
+    "type" : "CREDIT"
+  }, {
+    "id" : "3",
+    "name" : "updated transaction 3",
+    "amount" : 15000,
+    "description" : "gold",
+    "date" : "2023-08-15T13:14:15",
     "type" : "CREDIT"
   } ]
 }

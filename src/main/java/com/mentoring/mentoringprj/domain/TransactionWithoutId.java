@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -17,4 +18,17 @@ public class TransactionWithoutId {
     private String description;
     private LocalDateTime date;
     private TransactionType type;
+
+
+    public Transaction toNewTransaction() {
+
+        return Transaction.builder().id(UUID.randomUUID().toString())
+                .type(this.getType())
+                .description(this.getDescription())
+                .name(this.getName())
+                .amount(this.getAmount())
+                .date(this.getDate())
+                .build();
+
+    }
 }

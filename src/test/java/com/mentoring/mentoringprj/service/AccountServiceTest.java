@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -35,6 +36,8 @@ class AccountServiceTest {
 
     @Mock
     private LocalDateTimeProvider localTimeProvider;
+    @Captor
+    private ArgumentCaptor<Transaction> transactionCaptor;
     private AccountService service;
 
     @BeforeEach
@@ -122,7 +125,6 @@ class AccountServiceTest {
         //given
 
         TransactionWithoutId newTransactionWithoutId = TransactionWithoutId.builder().type(TransactionType.CREDIT).amount(200).build();
-        ArgumentCaptor<Transaction> transactionCaptor = ArgumentCaptor.forClass(Transaction.class);
         //when
         service.addTransaction(newTransactionWithoutId);
 
@@ -140,9 +142,8 @@ class AccountServiceTest {
     void should_return_correct_results_when_adding_transaction() throws Exception{
         //given
         Transaction existingTransaction = Transaction.builder().type(TransactionType.CREDIT).amount(300).build();
-        Transaction newTransaction = Transaction.builder().type(TransactionType.CREDIT).amount(200).build();
         TransactionWithoutId newTransactionWithoutId = TransactionWithoutId.builder().type(TransactionType.CREDIT).amount(200).build();
-        ArgumentCaptor<Transaction> transactionCaptor = ArgumentCaptor.forClass(Transaction.class);
+        Transaction newTransaction = newTransactionWithoutId.toNewTransaction();
         when(repository.getTransactions()).thenReturn(List.of(existingTransaction, newTransaction));
 
         //when
@@ -185,6 +186,5 @@ class AccountServiceTest {
         inOrder.verify(repository).deleteTransaction("2"); //remember verify just check interactions
         inOrder.verify(repository).getTransactions();
     }
-
 
 }

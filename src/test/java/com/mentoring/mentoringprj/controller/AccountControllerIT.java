@@ -65,9 +65,9 @@ class AccountControllerIT {
     }
     @Test
     void should_add_transactions() throws TransactionReadException, IOException {
-        Transaction existingTransaction = Transaction.builder().amount(300).type(TransactionType.CREDIT).build();
-        Transaction newTransaction = Transaction.builder().amount(150).type(TransactionType.CREDIT).build();
         TransactionWithoutId newTransactionWithoutId = TransactionWithoutId.builder().amount(150).type(TransactionType.CREDIT).build();
+        Transaction newTransaction = newTransactionWithoutId.toNewTransaction();
+        Transaction existingTransaction = Transaction.builder().amount(300).type(TransactionType.CREDIT).build();
         List<Transaction> expectedTransactions = List.of(existingTransaction,newTransaction);
         AccountDetails expectedAccountDetails = AccountDetails.builder().balance(450).transactions(expectedTransactions).build();
         when(accountService.addTransaction(newTransactionWithoutId)).thenReturn(expectedAccountDetails);

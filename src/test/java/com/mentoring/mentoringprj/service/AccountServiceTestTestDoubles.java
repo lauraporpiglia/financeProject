@@ -127,7 +127,7 @@ class AccountServiceTestTestDoubles {
     void should_call_repository_correctly_when_adding_a_transaction() throws Exception {
         //given
         TransactionWithoutId newTransactionNoId = TransactionWithoutId.builder().type(TransactionType.CREDIT).amount(200).build();
-        Transaction newTransaction = Transaction.builder().type(TransactionType.CREDIT).amount(200).build();
+        Transaction newTransaction = newTransactionNoId.toNewTransaction();
 
         //when
         subject.addTransaction(newTransactionNoId);
@@ -142,8 +142,8 @@ class AccountServiceTestTestDoubles {
     void should_return_correct_results_when_adding_transaction() throws Exception {
         //given
         Transaction existingTransaction = Transaction.builder().type(TransactionType.CREDIT).amount(300).build();
-        Transaction newTransaction = Transaction.builder().type(TransactionType.CREDIT).amount(200).build();
         TransactionWithoutId newTransactionNoId = TransactionWithoutId.builder().type(TransactionType.CREDIT).amount(200).build();
+        Transaction newTransaction = newTransactionNoId.toNewTransaction();
         setUp(List.of(existingTransaction, newTransaction));
 
         //when
