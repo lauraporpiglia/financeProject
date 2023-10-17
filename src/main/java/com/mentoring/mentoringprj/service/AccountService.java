@@ -3,6 +3,7 @@ package com.mentoring.mentoringprj.service;
 import com.mentoring.mentoringprj.domain.AccountDetails;
 import com.mentoring.mentoringprj.domain.Transaction;
 import com.mentoring.mentoringprj.domain.TransactionWithoutId;
+import com.mentoring.mentoringprj.exceptions.TransactionNotFoundException;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import com.mentoring.mentoringprj.repository.TransactionRepository;
 import com.mentoring.mentoringprj.util.LocalDateTimeProvider;
@@ -66,12 +67,12 @@ public class AccountService {
     }
 
 
-    public AccountDetails delete(String transactionId) throws TransactionReadException, IOException {
+    public AccountDetails delete(String transactionId) throws TransactionReadException, TransactionNotFoundException, IOException {
         repository.deleteTransaction(transactionId);
         return getAccountDetails();
     }
 
-    public AccountDetails updateTransaction(String id, TransactionWithoutId transactionToUpdate) throws TransactionReadException, IOException {
+    public AccountDetails updateTransaction(String id, TransactionWithoutId transactionToUpdate) throws TransactionReadException, IOException, TransactionNotFoundException {
         Transaction transaction = Transaction.builder()
                 .id(id)
                 .name(transactionToUpdate.getName())

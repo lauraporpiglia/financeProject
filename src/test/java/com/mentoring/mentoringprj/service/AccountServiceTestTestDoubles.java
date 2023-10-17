@@ -206,11 +206,6 @@ class AccountServiceTestTestDoubles {
         }
 
         @Override
-        public List<Transaction> getTransactionsById(String transactionId) throws TransactionReadException {
-            return null;
-        }
-
-        @Override
         public void addTransaction(Transaction transaction) throws TransactionReadException, IOException {
             addedTransactions.add(transaction);
         }

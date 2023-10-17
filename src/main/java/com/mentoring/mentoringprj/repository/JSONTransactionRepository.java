@@ -3,7 +3,7 @@ package com.mentoring.mentoringprj.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.mentoring.mentoringprj.domain.Transaction;
-import com.mentoring.mentoringprj.domain.TransactionWithoutId;
+import com.mentoring.mentoringprj.exceptions.TransactionNotFoundException;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,8 +18,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.Optional;
+
 
 @Repository
 @Qualifier("json")
@@ -54,12 +54,6 @@ public class JSONTransactionRepository implements TransactionRepository {
 
     }
 
-    @Override
-    public List<Transaction> getTransactionsById(String transactionId) throws TransactionReadException {
-        return getTransactions().stream()
-                .filter(num -> num.getId().equals(transactionId))
-                .collect(Collectors.toList());
-    }
 
     @Override
     public void addTransaction(Transaction transaction) throws TransactionReadException, IOException {
@@ -79,10 +73,16 @@ public class JSONTransactionRepository implements TransactionRepository {
     }
 
     @Override
-    public void deleteTransaction(String id) throws TransactionReadException, IOException {
+    public void deleteTransaction(String id) throws TransactionReadException, IOException, TransactionNotFoundException {
+        if (getTransactionsById(id).isEmpty()) {
+            throw new TransactionNotFoundException("Transaction not found with id %s".formatted(id));
+        }
         List<Transaction> transactions = getTransactions();
-        List<Transaction> filteredTransactions = transactions.stream().filter(transaction ->!transaction.getId().equals(id)).toList();
+        List<Transaction> filteredTransactions = transactions.stream().filter(transaction -> !transaction.getId().equals(id)).toList();
 
+        if (filteredTransactions.isEmpty()) {
+            throw new TransactionReadException("Transaction not found");
+        }
         TransactionWrapper transWrapper = new TransactionWrapper();
         transWrapper.setTransactions(filteredTransactions);
 
@@ -95,9 +95,9 @@ public class JSONTransactionRepository implements TransactionRepository {
     }
 
     @Override
-    public void updateTransaction(Transaction transaction) throws TransactionReadException, IOException {
-       deleteTransaction(transaction.getId());
-       addTransaction(transaction);
+    public void updateTransaction(Transaction transaction) throws TransactionReadException, IOException, TransactionNotFoundException {
+        deleteTransaction(transaction.getId());
+        addTransaction(transaction);
     }
 
 
@@ -107,5 +107,11 @@ public class JSONTransactionRepository implements TransactionRepository {
                 throw new TransactionReadException("Incorrect amount");
             }
         }
+    }
+
+    private Optional<Transaction> getTransactionsById(String transactionId) throws TransactionReadException {
+        return getTransactions().stream()
+                .filter(t -> t.getId().equals(transactionId))
+                .findFirst();
     }
 }

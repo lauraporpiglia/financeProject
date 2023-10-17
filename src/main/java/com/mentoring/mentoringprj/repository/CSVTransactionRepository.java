@@ -19,6 +19,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+
 @Qualifier("csv")
 @Repository
 public class CSVTransactionRepository implements TransactionRepository {
@@ -55,12 +57,6 @@ public class CSVTransactionRepository implements TransactionRepository {
         }
 
     }
-
-    @Override
-    public List<Transaction> getTransactionsById(String transactionId) throws TransactionReadException {
-        return Collections.emptyList();
-    }
-
     @Override
     public void addTransaction(Transaction transaction) {
         throw new UnsupportedOperationException("Can't add a transaction using CSV repository");

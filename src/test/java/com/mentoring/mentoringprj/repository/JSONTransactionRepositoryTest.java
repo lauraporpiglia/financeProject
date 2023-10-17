@@ -3,6 +3,7 @@ package com.mentoring.mentoringprj.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mentoring.mentoringprj.domain.Transaction;
 import com.mentoring.mentoringprj.domain.TransactionWithoutId;
+import com.mentoring.mentoringprj.exceptions.TransactionNotFoundException;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.mentoring.mentoringprj.domain.TransactionType.CREDIT;
@@ -27,6 +29,7 @@ class JSONTransactionRepositoryTest {
     private static final String SRC_PATH = "./src/test/resources/transactions/";
     private static final String BUILD_PATH = "./build/testout/";
     private ObjectMapper objectMapper;
+    private static final String UNEXISTENT_TRANSACTION_ID = "UNEXISTENT_TRANSACTION_ID";
 
     @BeforeEach
     void setup() {
@@ -114,13 +117,23 @@ class JSONTransactionRepositoryTest {
         List<Transaction> transactions = repository.getTransactions();
 
         assertThat(transactions).hasSize(3);
-        assertThat(transactions).contains(firstTransaction,secondTransaction);
+        assertThat(transactions).contains(firstTransaction, secondTransaction);
         assertThat(transactions)
                 .usingRecursiveFieldByFieldElementComparatorIgnoringFields("id")
                 .contains(savedNewTransaction);
-   /*@todo: assert savedNewTransaction Id*/
     }
 
+    @Test
+    void should_throw_exception_when_delete_called_on_unexistent_transaction() throws Exception {
+        //given
+        String originalPath = SRC_PATH.concat("deletableTransactions.json");
+        String newPath = BUILD_PATH.concat("deletableTransactions.json");
+        copyFile(originalPath, newPath);
+
+        JSONTransactionRepository repository = new JSONTransactionRepository(newPath, objectMapper);
+        //when
+        assertThrows(TransactionNotFoundException.class, () ->  repository.deleteTransaction(UNEXISTENT_TRANSACTION_ID));
+    }
     @Test
     void should_delete_a_transaction() throws Exception {
         //given
@@ -137,20 +150,6 @@ class JSONTransactionRepositoryTest {
         List<Transaction> transactions = repository.getTransactions();
 
         assertThat(transactions).containsExactly(firstTransaction);
-        //@todo: id in all transactions files
-    }
-
-    @Test
-    void should_return_A_single_transaction_ById() throws Exception {
-        String file = SRC_PATH.concat("goodTransactions.json");
-
-        JSONTransactionRepository repository = new JSONTransactionRepository(file, objectMapper);
-
-        Transaction selectedTransaction = Transaction.builder().id("2").name("transaction2").amount(500).date(LocalDateTime.parse("2021-11-28T04:05:06")).description("silver").type(CREDIT).build();
-
-        List<Transaction> transactions = repository.getTransactionsById("2");
-
-        assertThat(transactions).containsExactly(selectedTransaction);
     }
 
     @Test
@@ -168,6 +167,19 @@ class JSONTransactionRepositoryTest {
 
         List<Transaction> transactions = repository.getTransactions();
         assertThat(transactions).containsExactly(firstTransaction, newTransaction);
+    }
+
+    @Test
+    void should_throw_exception_when_updated_called_on_unexistent_transaction() throws Exception {
+        String originalFile = SRC_PATH.concat("updatedTransactions.json");
+        String newFile = BUILD_PATH.concat("updatedTransactions.json");
+
+        copyFile(originalFile, newFile);
+        JSONTransactionRepository repository = new JSONTransactionRepository(newFile, objectMapper);
+
+        Transaction newTransaction = Transaction.builder().id(UNEXISTENT_TRANSACTION_ID).build();
+
+        assertThrows(TransactionNotFoundException.class, () -> repository.updateTransaction(newTransaction));
     }
 
     private static void copyFile(String originalLocation, String newLocation) throws IOException {
