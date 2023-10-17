@@ -43,7 +43,7 @@ class AccountControllerIT {
 
         ResponseEntity<AccountDetails> response = restTemplate.getForEntity("/account", AccountDetails.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(expectedAccountDetails);
     }
 
@@ -63,7 +63,7 @@ class AccountControllerIT {
 
         ResponseEntity<AccountDetails> response = restTemplate.getForEntity(url, AccountDetails.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(expectedAccountDetails);
     }
     @Test
@@ -77,7 +77,7 @@ class AccountControllerIT {
 
         ResponseEntity<AccountDetails> response = restTemplate.postForEntity("/account", newTransactionWithoutId, AccountDetails.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(expectedAccountDetails);
     }
 
@@ -91,7 +91,7 @@ class AccountControllerIT {
         when(accountService.delete("2")).thenReturn(expectedAccountDetails);
         ResponseEntity<AccountDetails> response = restTemplate.exchange("/account/2", HttpMethod.DELETE, HttpEntity.EMPTY, AccountDetails.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(expectedAccountDetails);
     }
     @Test
@@ -109,7 +109,7 @@ class AccountControllerIT {
 
         ResponseEntity<AccountDetails> response = restTemplate.exchange(request, AccountDetails.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(expectedAccountDetails);
     }
 
@@ -118,7 +118,7 @@ class AccountControllerIT {
         when(accountService.delete(UNEXISTENT_ID)).thenThrow(new TransactionNotFoundException(""));
         ResponseEntity<AccountDetails> response = restTemplate.exchange("/account/%s".formatted(UNEXISTENT_ID), HttpMethod.DELETE, HttpEntity.EMPTY, AccountDetails.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(404));
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
     @Test
     void should_throw_exception_when_update_an_unexistent_transaction() throws Exception {
@@ -126,7 +126,7 @@ class AccountControllerIT {
         when(accountService.updateTransaction(UNEXISTENT_ID,updateTransaction)).thenThrow(new TransactionNotFoundException(""));
         ResponseEntity<AccountDetails> response = restTemplate.exchange("/update/%s".formatted(UNEXISTENT_ID), HttpMethod.PUT, HttpEntity.EMPTY, AccountDetails.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(404));
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
 }
