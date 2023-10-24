@@ -6,7 +6,7 @@ import com.mentoring.mentoringprj.domain.TransactionType;
 import com.mentoring.mentoringprj.domain.TransactionWithoutId;
 import com.mentoring.mentoringprj.exceptions.AmountException;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
-import com.mentoring.mentoringprj.repository.TransactionRepository;
+import com.mentoring.mentoringprj.repository.JSONTransactionRepository;
 import com.mentoring.mentoringprj.util.LocalDateTimeProvider;
 import com.mentoring.mentoringprj.util.TransactionCalculator;
 import com.mentoring.mentoringprj.util.TransactionFilter;
@@ -20,7 +20,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +32,7 @@ import static org.mockito.Mockito.*;
 class AccountServiceTest {
     private static final LocalDateTime DATE = LocalDateTime.now();
     @Mock
-    private TransactionRepository repository;
+    private JSONTransactionRepository repository;
     @Mock
     private TransactionFilter filter;
 

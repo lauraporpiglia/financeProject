@@ -5,7 +5,7 @@ import com.mentoring.mentoringprj.domain.Transaction;
 import com.mentoring.mentoringprj.domain.TransactionWithoutId;
 import com.mentoring.mentoringprj.exceptions.TransactionNotFoundException;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
-import com.mentoring.mentoringprj.repository.TransactionRepository;
+import com.mentoring.mentoringprj.repository.JSONTransactionRepository;
 import com.mentoring.mentoringprj.util.LocalDateTimeProvider;
 import com.mentoring.mentoringprj.util.TransactionCalculator;
 import com.mentoring.mentoringprj.util.TransactionFilter;
@@ -20,14 +20,14 @@ import java.util.Optional;
 @Service
 public class AccountService {
 
-    private final TransactionRepository repository;
+    private final JSONTransactionRepository repository;
     private final TransactionCalculator calculator;
 
     private final TransactionFilter filter;
 
     private final LocalDateTimeProvider dateProvider;
 
-    public AccountService(@Qualifier("json") TransactionRepository repository,
+    public AccountService(@Qualifier("json") JSONTransactionRepository repository,
                           TransactionCalculator calculator,
                           TransactionFilter filter,
                           LocalDateTimeProvider dateProvider) {

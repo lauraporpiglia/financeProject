@@ -1,4 +1,3 @@
 transactions:
-  path: ./src/main/resources/transactions/transactions.csv
   json:
     path: ./src/main/resources/transactions/transactions.json

@@ -6,7 +6,7 @@ import com.mentoring.mentoringprj.domain.TransactionType;
 import com.mentoring.mentoringprj.domain.TransactionWithoutId;
 import com.mentoring.mentoringprj.exceptions.AmountException;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
-import com.mentoring.mentoringprj.repository.TransactionRepository;
+import com.mentoring.mentoringprj.repository.JSONTransactionRepository;
 import com.mentoring.mentoringprj.util.LocalDateTimeProvider;
 import com.mentoring.mentoringprj.util.TransactionCalculator;
 import com.mentoring.mentoringprj.util.TransactionFilter;
@@ -187,7 +187,7 @@ class AccountServiceTestTestDoubles {
         inOrder.verify(repository).getTransactions();
     }
 
-    private static class StubTransactionRepository implements TransactionRepository {
+    private static class StubTransactionRepository extends JSONTransactionRepository {
         private final List<Transaction> transactionsToReturn;
 
 
@@ -195,27 +195,24 @@ class AccountServiceTestTestDoubles {
         private final List<String> deletedTransactions;
 
         public StubTransactionRepository(List<Transaction> transactionsToReturn) {
+            super(null, null);
             this.transactionsToReturn = transactionsToReturn;
             addedTransactions = new ArrayList<>();
             deletedTransactions = new ArrayList<>();
         }
 
-        @Override
         public List<Transaction> getTransactions() throws TransactionReadException {
             return transactionsToReturn;
         }
 
-        @Override
         public void addTransaction(Transaction transaction) throws TransactionReadException, IOException {
             addedTransactions.add(transaction);
         }
 
-        @Override
         public void deleteTransaction(String id) throws TransactionReadException, IOException {
             deletedTransactions.add(id);
         }
 
-        @Override
         public void updateTransaction(Transaction transaction) throws TransactionReadException, IOException {
 
         }

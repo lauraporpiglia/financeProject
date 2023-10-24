@@ -23,7 +23,7 @@ import java.util.Optional;
 
 @Repository
 @Qualifier("json")
-public class JSONTransactionRepository implements TransactionRepository {
+public class JSONTransactionRepository {
     private final Path path;
     private final ObjectMapper objectMapper;
 
@@ -32,7 +32,6 @@ public class JSONTransactionRepository implements TransactionRepository {
         this.objectMapper = objectMapper;
     }
 
-    @Override
     public List<Transaction> getTransactions() throws TransactionReadException {
         TransactionWrapper transactionWrapper;
         try {
@@ -55,7 +54,6 @@ public class JSONTransactionRepository implements TransactionRepository {
     }
 
 
-    @Override
     public void addTransaction(Transaction transaction) throws TransactionReadException, IOException {
         List<Transaction> transactions = getTransactions();
         transactions.add(transaction);
@@ -72,7 +70,6 @@ public class JSONTransactionRepository implements TransactionRepository {
         IOUtils.closeQuietly(outStream);
     }
 
-    @Override
     public void deleteTransaction(String id) throws TransactionReadException, IOException, TransactionNotFoundException {
         if (getTransactionsById(id).isEmpty()) {
             throw new TransactionNotFoundException("Transaction not found with id %s".formatted(id));
@@ -94,7 +91,6 @@ public class JSONTransactionRepository implements TransactionRepository {
         IOUtils.closeQuietly(outStream);
     }
 
-    @Override
     public void updateTransaction(Transaction transaction) throws TransactionReadException, IOException, TransactionNotFoundException {
         deleteTransaction(transaction.getId());
         addTransaction(transaction);

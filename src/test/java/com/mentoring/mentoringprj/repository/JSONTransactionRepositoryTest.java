@@ -2,7 +2,6 @@ package com.mentoring.mentoringprj.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mentoring.mentoringprj.domain.Transaction;
-import com.mentoring.mentoringprj.domain.TransactionWithoutId;
 import com.mentoring.mentoringprj.exceptions.TransactionNotFoundException;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +16,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.mentoring.mentoringprj.domain.TransactionType.CREDIT;
@@ -63,7 +61,7 @@ class JSONTransactionRepositoryTest {
     void should_Throw_TransactionReadException(String file, String exceptionMessage) {
 
         String fullPath = SRC_PATH.concat(file);
-        TransactionRepository repository = new JSONTransactionRepository(fullPath, objectMapper);
+        JSONTransactionRepository repository = new JSONTransactionRepository(fullPath, objectMapper);
         Exception exception = assertThrows(TransactionReadException.class, repository::getTransactions);
 
         assertThat(exception).hasMessage(exceptionMessage);
