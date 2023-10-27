@@ -64,10 +64,11 @@ public class JSONTransactionRepository {
         byte[] bytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(transWrapper);
 
 
-        OutputStream outStream = new FileOutputStream(path.toFile());
-        outStream.write(bytes);
+        try (OutputStream outStream = new FileOutputStream(path.toFile())) {
+            outStream.write(bytes);
 
-        IOUtils.closeQuietly(outStream);
+            IOUtils.closeQuietly(outStream);
+        }
     }
 
     public void deleteTransaction(String id) throws TransactionReadException, IOException, TransactionNotFoundException {

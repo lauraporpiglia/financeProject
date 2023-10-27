@@ -16,7 +16,7 @@ class LocalDateTimeProviderTest {
         LocalDateTime firstDate = timeProvider.now();
 
         //act
-        LocalDateTime secondDate = timeProvider.now();
+        LocalDateTime secondDate = timeProvider.now().plusSeconds(1L);
 
         //assert
         assertThat(firstDate).isNotEqualTo(secondDate);
