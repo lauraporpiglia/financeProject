@@ -19,8 +19,4 @@ public class Transaction {
     private LocalDateTime date;
     private TransactionType type;
 
-    public static Transaction fromTransaction(TransactionWithoutId transWithoutId){
-
-        return null;
-    }
 }

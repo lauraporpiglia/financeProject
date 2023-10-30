@@ -6,25 +6,19 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 @Component
 public class TransactionFilter {
-
-
     public List<Transaction> getTransactionsBetween(List<Transaction> transactions, LocalDateTime from, LocalDateTime to) {
-        List<Transaction> filteredResults = new ArrayList<>();
-
-        for (Transaction t : transactions) {
-            LocalDateTime transactionDate = t.getDate();
-            if ((transactionDate.isBefore(to) && transactionDate.isAfter(from))
-                    || (transactionDate.equals(from) || transactionDate.equals(to))) {
-                filteredResults.add(t);
-            }
-        }
-
-        return filteredResults;
-
+        return transactions.stream()
+                .filter(t -> {
+                    LocalDateTime transactionDate = t.getDate();
+                    return (transactionDate.isBefore(to) && transactionDate.isAfter(from))
+                            || transactionDate.equals(from)
+                            || transactionDate.equals(to);
+                })
+                .collect(Collectors.toList());
     }
 
     public List<Transaction> getFilteredTransactionByNameOrDescription(List<Transaction> transactions, String search) {
@@ -37,5 +31,4 @@ public class TransactionFilter {
                 })
                 .toList();
     }
-
 }
