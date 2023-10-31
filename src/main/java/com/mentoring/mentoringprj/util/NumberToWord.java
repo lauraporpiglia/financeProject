@@ -6,8 +6,9 @@ import org.springframework.stereotype.Component;
 public class NumberToWord {
 
     public String convertNumberToWords(double number) {
+        String numberStr = String.valueOf(number);
         int intPart = (int) number;
-        int decimalPart = (int) ((number - intPart) * 100); // Assuming 2 decimal places
+        int decimalPart = Integer.parseInt(numberStr.substring(0, numberStr.length() - 3));
         String result = "";
 
         String intPartWords = convertIntegerToWords(intPart);
@@ -23,7 +24,7 @@ public class NumberToWord {
             }
         }
         if (result.endsWith("zero"))
-            result = result.substring(0, result.length() - 4);
+            return result.substring(0, result.length() - 4);
 
         return result;
     }

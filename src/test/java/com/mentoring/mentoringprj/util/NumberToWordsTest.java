@@ -1,12 +1,11 @@
 package com.mentoring.mentoringprj.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class NumberToWordsTest {
 
@@ -76,11 +75,11 @@ class NumberToWordsTest {
             "9, nine"
     })
     void testConvertDigitToWord(int input, String expectedOutput) {
-        assertEquals(expectedOutput, digitConverter.convertNumberToWords(input));
+        assertEquals(expectedOutput, digitConverter.convertIntegerToWords(input));
     }
 
     /*@todo fix, it doesnt work */
-    @Disabled
+    @Test
      void testConvertNumberToWords() {
         // Example test cases for converting decimal numbers to words
         assertEquals("zero", digitConverter.convertNumberToWords(0.0));
