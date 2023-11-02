@@ -5,10 +5,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class NumberToWord {
 
-    public String convertNumberToWords(double number) {
+    public String convertNumberToWords(double number, String wholeNumber, String decimalNumber) {
         String numberStr = String.valueOf(number);
-        int intPart = (int) number;
-        int decimalPart = Integer.parseInt(numberStr.substring(0, numberStr.length() - 3));
+        String[] splittedNum = numberStr.split("\\.");
+        int intPart = Integer.parseInt(splittedNum[0]);
+        int decimalPart = Integer.parseInt(splittedNum[1]);
         String result = "";
 
         String intPartWords = convertIntegerToWords(intPart);

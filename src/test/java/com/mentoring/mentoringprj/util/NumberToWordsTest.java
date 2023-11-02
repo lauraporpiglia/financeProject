@@ -19,7 +19,6 @@ class NumberToWordsTest {
     @Test
     void testConvertIntegerToWords_Zero() {
         assertEquals("zero", digitConverter.convertIntegerToWords(0));
-        assertEquals("zero", digitConverter.convertIntegerToWords(00));
     }
 
     @Test
@@ -33,7 +32,11 @@ class NumberToWordsTest {
         assertEquals("eleven", digitConverter.convertIntegerToWords(11));
         assertEquals("nineteen", digitConverter.convertIntegerToWords(19));
     }
-
+ @Test
+ void testConversionForNumbersWithNonZeroDecimal(){
+     assertEquals("fifty five", digitConverter.convertIntegerToWords(55));
+     assertEquals("seventy two", digitConverter.convertIntegerToWords(72));
+ }
     @Test
     void testConvertIntegerToWords_Tens() {
         assertEquals("twenty", digitConverter.convertIntegerToWords(20));
@@ -59,6 +62,7 @@ class NumberToWordsTest {
         assertEquals("two hundred thirty four", digitConverter.convertIntegerToWords(234));
         assertEquals("seven thousand eight hundred ninety", digitConverter.convertIntegerToWords(7890));
         assertEquals("twelve thousand three hundred forty five", digitConverter.convertIntegerToWords(12345));
+        assertEquals("two millions", digitConverter.convertIntegerToWords(2000000));
     }
 
     @ParameterizedTest
@@ -82,12 +86,12 @@ class NumberToWordsTest {
     @Test
      void testConvertNumberToWords() {
         // Example test cases for converting decimal numbers to words
-        assertEquals("zero", digitConverter.convertNumberToWords(0.0));
-        assertEquals("one point(?) two", digitConverter.convertNumberToWords(1.2));
-        assertEquals("two point three four", digitConverter.convertNumberToWords(2.34));
-        assertEquals("three point four five", digitConverter.convertNumberToWords(3.45));
-        assertEquals("four point six seven", digitConverter.convertNumberToWords(4.67));
-        assertEquals("five point eight nine", digitConverter.convertNumberToWords(5.89));
+        //assertEquals("zero", digitConverter.convertNumberToWords(0.0));
+        assertEquals("one pound twenty pence", digitConverter.convertNumberToWords(1.20d, "pound","pence"));
+//        assertEquals("two point three four", digitConverter.convertNumberToWords(2.34));
+//        assertEquals("three point four five", digitConverter.convertNumberToWords(3.45));
+//        assertEquals("four point six seven", digitConverter.convertNumberToWords(4.67));
+//        assertEquals("five point eight nine", digitConverter.convertNumberToWords(5.89));
     }
 
 }
