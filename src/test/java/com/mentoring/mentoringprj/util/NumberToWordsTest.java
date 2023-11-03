@@ -1,11 +1,13 @@
 package com.mentoring.mentoringprj.util;
 
+import com.mentoring.mentoringprj.exceptions.TooRichException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class NumberToWordsTest {
 
@@ -17,81 +19,86 @@ class NumberToWordsTest {
     }
 
     @Test
-    void testConvertIntegerToWords_Zero() {
-        assertEquals("zero", digitConverter.convertIntegerToWords(0));
+    void testconverToWords_Zero() throws Exception {
+        assertEquals("zero pounds zero p", digitConverter.converToWords(0));
     }
 
     @Test
-    void testConvertIntegerToWords_SingleDigits() {
-        assertEquals("one", digitConverter.convertIntegerToWords(1));
-        assertEquals("nine", digitConverter.convertIntegerToWords(9));
+    void testconverToWords_SingleDigits() throws Exception {
+        assertEquals("one pound zero p", digitConverter.converToWords(1));
+        assertEquals("nine pounds zero p", digitConverter.converToWords(9));
     }
 
     @Test
-    void testConvertIntegerToWords_Teens() {
-        assertEquals("eleven", digitConverter.convertIntegerToWords(11));
-        assertEquals("nineteen", digitConverter.convertIntegerToWords(19));
-    }
- @Test
- void testConversionForNumbersWithNonZeroDecimal(){
-     assertEquals("fifty five", digitConverter.convertIntegerToWords(55));
-     assertEquals("seventy two", digitConverter.convertIntegerToWords(72));
- }
-    @Test
-    void testConvertIntegerToWords_Tens() {
-        assertEquals("twenty", digitConverter.convertIntegerToWords(20));
-        assertEquals("ninety", digitConverter.convertIntegerToWords(90));
+    void testconverToWords_Teens() throws Exception {
+        assertEquals("eleven pounds zero p", digitConverter.converToWords(11));
+        assertEquals("nineteen pounds zero p", digitConverter.converToWords(19));
     }
 
     @Test
-    void testConvertIntegerToWords_Hundreds() {
-        assertEquals("one hundred", digitConverter.convertIntegerToWords(100));
-        assertEquals("five hundred", digitConverter.convertIntegerToWords(500));
-        assertEquals("nine hundred", digitConverter.convertIntegerToWords(900));
+    void testConversionForNumbersWithNonZeroDecimal() throws Exception {
+        assertEquals("fifty five pounds zero p", digitConverter.convertDoubleToWords(55, "pound"));
+        assertEquals("seventy two pounds zero p", digitConverter.converToWords(72));
     }
 
     @Test
-    void testConvertIntegerToWords_Thousands() {
-        assertEquals("one thousand", digitConverter.convertIntegerToWords(1000));
-        assertEquals("five thousand", digitConverter.convertIntegerToWords(5000));
-        assertEquals("nine thousand", digitConverter.convertIntegerToWords(9000));
+    void testconverToWords_Tens() throws Exception {
+        assertEquals("twenty pounds zero p", digitConverter.converToWords(20));
+        assertEquals("ninety pounds zero p", digitConverter.converToWords(90));
     }
 
     @Test
-    void testConvertIntegerToWords_ComplexNumbers() {
-        assertEquals("two hundred thirty four", digitConverter.convertIntegerToWords(234));
-        assertEquals("seven thousand eight hundred ninety", digitConverter.convertIntegerToWords(7890));
-        assertEquals("twelve thousand three hundred forty five", digitConverter.convertIntegerToWords(12345));
-        assertEquals("two millions", digitConverter.convertIntegerToWords(2000000));
+    void testconverToWords_Hundreds() throws Exception {
+        assertEquals("one hundred pounds zero p", digitConverter.converToWords(100));
+        assertEquals("five hundred pounds zero p", digitConverter.converToWords(500));
+        assertEquals("nine hundred pounds zero p", digitConverter.converToWords(900));
+    }
+
+    @Test
+    void testconverToWords_Thousands() throws Exception {
+        assertEquals("one thousand pounds zero p", digitConverter.converToWords(1000));
+        assertEquals("five thousand pounds zero p", digitConverter.converToWords(5000));
+        assertEquals("nine thousand pounds zero p", digitConverter.converToWords(9000));
+    }
+
+    @Test
+    void testconverToWords_ComplexNumbers() throws Exception {
+        assertEquals("two hundred thirty four pounds zero p", digitConverter.converToWords(234));
+        assertEquals("seven thousand eight hundred ninety pounds zero p", digitConverter.converToWords(7890));
+        assertEquals("twelve thousand three hundred forty five pounds zero p", digitConverter.converToWords(12345));
+    }
+
+    @Test
+    void testTooRichException() {
+        TooRichException exception = assertThrows(TooRichException.class, () -> digitConverter.converToWords(2000000));
+        assertEquals("An error occurred, contact customer service", exception.getMessage());
     }
 
     @ParameterizedTest
     @CsvSource({
-            "0, zero",
-            "1, one",
-            "2, two",
-            "3, three",
-            "4, four",
-            "5, five",
-            "6, six",
-            "7, seven",
-            "8, eight",
-            "9, nine"
+            "0, zero pounds zero p",
+            "1, one pound zero p",
+            "2, two pounds zero p",
+            "3, three pounds zero p",
+            "4, four pounds zero p",
+            "5, five pounds zero p",
+            "6, six pounds zero p",
+            "7, seven pounds zero p",
+            "8, eight pounds zero p",
+            "9, nine pounds zero p"
     })
-    void testConvertDigitToWord(int input, String expectedOutput) {
-        assertEquals(expectedOutput, digitConverter.convertIntegerToWords(input));
+    void testConvertDigitToWord(int input, String expectedOutput) throws Exception {
+        assertEquals(expectedOutput, digitConverter.converToWords(input));
     }
 
-    /*@todo fix, it doesnt work */
     @Test
-     void testConvertNumberToWords() {
-        // Example test cases for converting decimal numbers to words
-        //assertEquals("zero", digitConverter.convertNumberToWords(0.0));
-        assertEquals("one pound twenty pence", digitConverter.convertNumberToWords(1.20d, "pound","pence"));
-//        assertEquals("two point three four", digitConverter.convertNumberToWords(2.34));
-//        assertEquals("three point four five", digitConverter.convertNumberToWords(3.45));
-//        assertEquals("four point six seven", digitConverter.convertNumberToWords(4.67));
-//        assertEquals("five point eight nine", digitConverter.convertNumberToWords(5.89));
+    void testConvertNumberToWords() throws Exception {
+        assertEquals("zero pounds zero p", digitConverter.convertDoubleToWords(0.0, "pound"));
+        assertEquals("one pound twenty p", digitConverter.convertDoubleToWords(1.20d, "pound"));
+        assertEquals("two pounds three four p", digitConverter.convertDoubleToWords(2.34, "pound"));
+        assertEquals("three pounds four five p", digitConverter.convertDoubleToWords(3.45, "pound"));
+        assertEquals("four pounds six seven p", digitConverter.convertDoubleToWords(4.67, "pound"));
+        assertEquals("five pounds eight nine p", digitConverter.convertDoubleToWords(5.89, "pound"));
     }
 
 }

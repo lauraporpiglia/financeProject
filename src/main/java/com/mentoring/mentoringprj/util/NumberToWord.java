@@ -1,11 +1,16 @@
 package com.mentoring.mentoringprj.util;
 
+import com.mentoring.mentoringprj.exceptions.TooRichException;
 import org.springframework.stereotype.Component;
 
 @Component
 public class NumberToWord {
 
-    public String convertNumberToWords(double number, String wholeNumber, String decimalNumber) {
+    public String convertDoubleToWords(double number, String currency) throws TooRichException {
+        String[] curr = new String[0];
+        if (currency.equalsIgnoreCase("pound")) {
+            curr = new String[]{"pounds", "p"};
+        }
         String numberStr = String.valueOf(number);
         String[] splittedNum = numberStr.split("\\.");
         int intPart = Integer.parseInt(splittedNum[0]);
@@ -15,23 +20,23 @@ public class NumberToWord {
         String intPartWords = convertIntegerToWords(intPart);
         String decimalPartWords = convertIntegerToWords(decimalPart);
 
-        if (intPartWords.isEmpty()) {
-            result = decimalPartWords;
-        } else {
-            if (decimalPartWords.isEmpty()) {
-                result = intPartWords;
-            } else {
-                result = intPartWords + decimalPartWords;
-            }
-        }
-        if (result.endsWith("zero"))
-            return result.substring(0, result.length() - 4);
+        StringBuilder sb = new StringBuilder(result);
+        return sb.append(intPartWords)
+                .append(" ")
+                .append(curr[0])
+                .append(" ")
+                .append(decimalPartWords)
+                .append(" ")
+                .append(curr[1]).toString();
+    }
 
-        return result;
+    public String converToWords(int number) throws TooRichException {
+
+        return convertDoubleToWords(number, "pound");
     }
 
 
-    public String convertIntegerToWords(int number) {
+    public String convertIntegerToWords(int number) throws TooRichException {
 
         String[] units = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
         String[] teens = {"", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"};
@@ -40,6 +45,9 @@ public class NumberToWord {
         String words = "";
         if (number == 0) {
             return "zero";
+        }
+        if (number >= 1000000) {
+            throw new TooRichException("An error occurred, contact customer service");
         }
         if (number >= 1000) {
             words += convertIntegerToWords(number / 1000) + " thousand ";
