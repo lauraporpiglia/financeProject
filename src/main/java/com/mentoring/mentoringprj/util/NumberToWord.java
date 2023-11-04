@@ -6,12 +6,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class NumberToWord {
 
-    public String convertDoubleToWords(double number, String currency) throws TooRichException {
+    public String convertDoubleToWords(String numberStr, String currency) throws TooRichException, IllegalArgumentException {
         String[] curr = new String[0];
         if (currency.equalsIgnoreCase("pound")) {
             curr = new String[]{"pounds", "p"};
         }
-        String numberStr = String.valueOf(number);
+        if (!numberStr.contains(".")) {
+            numberStr = numberStr.concat(".00");
+        } else if (numberStr.length() - numberStr.indexOf(".") == 3) {
+            System.out.println("len " + numberStr.length() + " . " + numberStr.indexOf("."));
+        }
+
         String[] splittedNum = numberStr.split("\\.");
         int intPart = Integer.parseInt(splittedNum[0]);
         int decimalPart = Integer.parseInt(splittedNum[1]);
@@ -20,19 +25,19 @@ public class NumberToWord {
         String intPartWords = convertIntegerToWords(intPart);
         String decimalPartWords = convertIntegerToWords(decimalPart);
 
-        StringBuilder sb = new StringBuilder(result);
-        return sb.append(intPartWords)
-                .append(" ")
-                .append(curr[0])
-                .append(" ")
-                .append(decimalPartWords)
-                .append(" ")
-                .append(curr[1]).toString();
+        String sb = result + intPartWords +
+                " " +
+                curr[0] +
+                " " +
+                decimalPartWords +
+                " " +
+                curr[1];
+        return sb;
     }
 
     public String converToWords(int number) throws TooRichException {
 
-        return convertDoubleToWords(number, "pound");
+        return convertDoubleToWords(String.valueOf(number), "pound");
     }
 
 
@@ -57,7 +62,10 @@ public class NumberToWord {
             words += units[number / 100] + " hundred ";
             number %= 100;
         }
-        if (number >= 20) {
+        if (number % 10 == 0 && number >= 10 && number <= 90) {
+            words += tens[number / 10] + " ";
+        }
+        if (number % 10 != 0 && number > 20) {
             words += tens[number / 10] + " ";
             number %= 10;
         }
@@ -65,7 +73,8 @@ public class NumberToWord {
             words += teens[number - 10] + " ";
             number = 0; // teen number already accounted
         }
-        if (number > 0) {
+
+        if (number > 0 && number <= 9) {
             words += units[number] + " ";
         }
 

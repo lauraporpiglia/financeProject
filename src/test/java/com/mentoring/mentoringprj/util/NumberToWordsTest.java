@@ -25,7 +25,7 @@ class NumberToWordsTest {
 
     @Test
     void testconverToWords_SingleDigits() throws Exception {
-        assertEquals("one pound zero p", digitConverter.converToWords(1));
+        assertEquals("one pounds zero p", digitConverter.converToWords(1));
         assertEquals("nine pounds zero p", digitConverter.converToWords(9));
     }
 
@@ -37,7 +37,7 @@ class NumberToWordsTest {
 
     @Test
     void testConversionForNumbersWithNonZeroDecimal() throws Exception {
-        assertEquals("fifty five pounds zero p", digitConverter.convertDoubleToWords(55, "pound"));
+        assertEquals("fifty five pounds zero p", digitConverter.convertDoubleToWords("55", "pound"));
         assertEquals("seventy two pounds zero p", digitConverter.converToWords(72));
     }
 
@@ -77,7 +77,7 @@ class NumberToWordsTest {
     @ParameterizedTest
     @CsvSource({
             "0, zero pounds zero p",
-            "1, one pound zero p",
+            "1, one pounds zero p",
             "2, two pounds zero p",
             "3, three pounds zero p",
             "4, four pounds zero p",
@@ -92,13 +92,15 @@ class NumberToWordsTest {
     }
 
     @Test
-    void testConvertNumberToWords() throws Exception {
-        assertEquals("zero pounds zero p", digitConverter.convertDoubleToWords(0.0, "pound"));
-        assertEquals("one pound twenty p", digitConverter.convertDoubleToWords(1.20d, "pound"));
-        assertEquals("two pounds three four p", digitConverter.convertDoubleToWords(2.34, "pound"));
-        assertEquals("three pounds four five p", digitConverter.convertDoubleToWords(3.45, "pound"));
-        assertEquals("four pounds six seven p", digitConverter.convertDoubleToWords(4.67, "pound"));
-        assertEquals("five pounds eight nine p", digitConverter.convertDoubleToWords(5.89, "pound"));
+    void testConvertDoubleToWords() throws Exception {
+        assertEquals("zero pounds zero p", digitConverter.convertDoubleToWords("0.0", "pound"));
+        assertEquals("one pounds twenty p", digitConverter.convertDoubleToWords("1.20", "pound"));
+        assertEquals("ten pounds ten p", digitConverter.convertDoubleToWords("10.10", "pound"));
+
+        assertEquals("two pounds thirty four p", digitConverter.convertDoubleToWords("2.34", "pound"));
+        assertEquals("three pounds forty five p", digitConverter.convertDoubleToWords("3.45", "pound"));
+        assertEquals("four pounds sixty seven p", digitConverter.convertDoubleToWords("4.67", "pound"));
+        assertEquals("five pounds eighty nine p", digitConverter.convertDoubleToWords("5.89", "pound"));
     }
 
 }
