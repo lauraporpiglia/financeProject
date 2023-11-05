@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.*;
+
 
 @Component
 public class TransactionFilter {
@@ -18,7 +20,7 @@ public class TransactionFilter {
                             || transactionDate.equals(from)
                             || transactionDate.equals(to);
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<Transaction> getFilteredTransactionByNameOrDescription(List<Transaction> transactions, String search) {

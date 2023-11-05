@@ -6,11 +6,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class NumberToWord {
-
+    private static final  String  LABEL_POUND ="pounds";
+    private static final  String  LABEL_P ="p";
     public String convertDoubleToWords(String numberStr, String currency) throws TooRichException, IllegalArgumentException, CurrencyUnsupportedException {
         String[] curr ;
         if (currency.equalsIgnoreCase("pound")) {
-            curr = new String[]{"pounds", "p"};
+            curr = new String[]{LABEL_POUND,LABEL_P};
         }
         else{
             throw new CurrencyUnsupportedException("Currency not supported");
@@ -18,9 +19,6 @@ public class NumberToWord {
         if (!numberStr.contains(".")) {
             numberStr = numberStr.concat(".00");
         }
-//        else if (numberStr.length() - numberStr.indexOf(".") == 3) {
-//            System.out.println("len " + numberStr.length() + " . " + numberStr.indexOf("."));
-//        }
 
         String[] splittedNum = numberStr.split("\\.");
         int intPart = Integer.parseInt(splittedNum[0]);
