@@ -114,8 +114,8 @@ class JSONTransactionRepositoryTest {
         //then
         List<Transaction> transactions = repository.getTransactions();
 
-        assertThat(transactions).hasSize(3);
-        assertThat(transactions).contains(firstTransaction, secondTransaction);
+        assertThat(transactions).hasSize(3)
+                .contains(firstTransaction, secondTransaction);
         assertThat(transactions)
                 .usingRecursiveFieldByFieldElementComparatorIgnoringFields("id")
                 .contains(savedNewTransaction);
@@ -130,8 +130,9 @@ class JSONTransactionRepositoryTest {
 
         JSONTransactionRepository repository = new JSONTransactionRepository(newPath, objectMapper);
         //when
-        assertThrows(TransactionNotFoundException.class, () ->  repository.deleteTransaction(UNEXISTENT_TRANSACTION_ID));
+        assertThrows(TransactionNotFoundException.class, () -> repository.deleteTransaction(UNEXISTENT_TRANSACTION_ID));
     }
+
     @Test
     void should_delete_a_transaction() throws Exception {
         //given

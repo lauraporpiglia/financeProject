@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class NumberToWord {
-    private static final  String  LABEL_POUND ="pounds";
-    private static final  String  LABEL_P ="p";
+    static final String LABEL_POUND = "pounds";
+    static final String LABEL_P = "p";
     public String convertDoubleToWords(String numberStr, String currency) throws TooRichException, IllegalArgumentException, CurrencyUnsupportedException {
         String[] curr ;
         if (currency.equalsIgnoreCase("pound")) {
