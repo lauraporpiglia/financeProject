@@ -1,21 +1,26 @@
 package com.mentoring.mentoringprj.util;
 
+import com.mentoring.mentoringprj.exceptions.CurrencyUnsupportedException;
 import com.mentoring.mentoringprj.exceptions.TooRichException;
 import org.springframework.stereotype.Component;
 
 @Component
 public class NumberToWord {
 
-    public String convertDoubleToWords(String numberStr, String currency) throws TooRichException, IllegalArgumentException {
-        String[] curr = new String[0];
+    public String convertDoubleToWords(String numberStr, String currency) throws TooRichException, IllegalArgumentException, CurrencyUnsupportedException {
+        String[] curr ;
         if (currency.equalsIgnoreCase("pound")) {
             curr = new String[]{"pounds", "p"};
         }
+        else{
+            throw new CurrencyUnsupportedException("Currency not supported");
+        }
         if (!numberStr.contains(".")) {
             numberStr = numberStr.concat(".00");
-        } else if (numberStr.length() - numberStr.indexOf(".") == 3) {
-            System.out.println("len " + numberStr.length() + " . " + numberStr.indexOf("."));
         }
+//        else if (numberStr.length() - numberStr.indexOf(".") == 3) {
+//            System.out.println("len " + numberStr.length() + " . " + numberStr.indexOf("."));
+//        }
 
         String[] splittedNum = numberStr.split("\\.");
         int intPart = Integer.parseInt(splittedNum[0]);
@@ -25,18 +30,16 @@ public class NumberToWord {
         String intPartWords = convertIntegerToWords(intPart);
         String decimalPartWords = convertIntegerToWords(decimalPart);
 
-        String sb = result + intPartWords +
+        return result + intPartWords +
                 " " +
                 curr[0] +
                 " " +
                 decimalPartWords +
                 " " +
                 curr[1];
-        return sb;
     }
 
-    public String converToWords(int number) throws TooRichException {
-
+    public String converToWords(int number) throws TooRichException, CurrencyUnsupportedException {
         return convertDoubleToWords(String.valueOf(number), "pound");
     }
 
@@ -62,7 +65,7 @@ public class NumberToWord {
             words += units[number / 100] + " hundred ";
             number %= 100;
         }
-        if (number % 10 == 0 && number >= 10 && number <= 90) {
+        if (number % 10 == 0 && number >= 10 ) { //(&& number <= 90) always T
             words += tens[number / 10] + " ";
         }
         if (number % 10 != 0 && number > 20) {
