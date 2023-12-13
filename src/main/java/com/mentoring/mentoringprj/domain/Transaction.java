@@ -1,5 +1,6 @@
 package com.mentoring.mentoringprj.domain;
 
+import com.mentoring.mentoringprj.repository.entity.TransactionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,8 +20,22 @@ public class Transaction {
     private LocalDateTime date;
     private TransactionType type;
 
-    public static Transaction fromTransaction(TransactionWithoutId transWithoutId){
+    public TransactionEntity toTransactionEntity() {
 
-        return null;
+        TransactionEntity.TransactionEntityBuilder builder = TransactionEntity.builder()
+                .id(this.id)
+                .name(this.name)
+                .amount(this.amount)
+                .description(this.description);
+
+        if (this.date != null) {
+            builder.date(String.valueOf(this.date));
+        }
+        if (this.type != null) {
+            builder.type(String.valueOf(this.type));
+        }
+
+
+        return builder.build();
     }
 }

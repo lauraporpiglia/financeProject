@@ -42,7 +42,7 @@ class JSONTransactionRepositoryTest {
         Transaction firstTransaction = Transaction.builder().id("1").name("transaction1").amount(300).date(LocalDateTime.parse("2023-03-15T13:14:15")).description("gold").type(DEBIT).build();
         Transaction secondTransaction = Transaction.builder().id("2").name("transaction2").amount(500).date(LocalDateTime.parse("2021-11-28T04:05:06")).description("silver").type(CREDIT).build();
 
-        List<Transaction> transactions = repository.getTransactions();
+        List<Transaction> transactions = repository.findAll();
 
         assertThat(transactions).containsExactly(firstTransaction, secondTransaction);
     }
@@ -51,7 +51,7 @@ class JSONTransactionRepositoryTest {
     void should_not_return_an_empty_list_of_transactions_when_file_is_empty() throws Exception {
         String file = SRC_PATH.concat("emptyFile.json");
         JSONTransactionRepository repository = new JSONTransactionRepository(file, objectMapper);
-        List<Transaction> transactions = repository.getTransactions();
+        List<Transaction> transactions = repository.findAll();
 
         assertThat(transactions).isEmpty();
     }
@@ -62,7 +62,7 @@ class JSONTransactionRepositoryTest {
 
         String fullPath = SRC_PATH.concat(file);
         JSONTransactionRepository repository = new JSONTransactionRepository(fullPath, objectMapper);
-        Exception exception = assertThrows(TransactionReadException.class, repository::getTransactions);
+        Exception exception = assertThrows(TransactionReadException.class, repository::findAll);
 
         assertThat(exception).hasMessage(exceptionMessage);
 
@@ -86,10 +86,10 @@ class JSONTransactionRepositoryTest {
         Transaction secondTransaction = Transaction.builder().id("2").name("transaction2").amount(500).date(LocalDateTime.parse("2021-11-28T04:05:06")).description("silver").type(CREDIT).build();
         Transaction newTransaction = Transaction.builder().id("3").name("newTransaction").amount(123).type(DEBIT).build();
         //when
-        repository.addTransaction(newTransaction);
+        repository.save(newTransaction);
 
         //then
-        List<Transaction> transactions = repository.getTransactions();
+        List<Transaction> transactions = repository.findAll();
 
         assertThat(transactions).containsExactly(firstTransaction, secondTransaction, newTransaction);
     }
@@ -109,10 +109,10 @@ class JSONTransactionRepositoryTest {
         Transaction newTransaction = Transaction.builder().name("newTransaction").amount(123).type(DEBIT).build();
         Transaction savedNewTransaction = Transaction.builder().name(newTransaction.getName()).amount(newTransaction.getAmount()).type(newTransaction.getType()).build();
         //when
-        repository.addTransaction(newTransaction);
+        repository.save(newTransaction);
 
         //then
-        List<Transaction> transactions = repository.getTransactions();
+        List<Transaction> transactions = repository.findAll();
 
         assertThat(transactions).hasSize(3);
         assertThat(transactions).contains(firstTransaction, secondTransaction);
@@ -130,7 +130,7 @@ class JSONTransactionRepositoryTest {
 
         JSONTransactionRepository repository = new JSONTransactionRepository(newPath, objectMapper);
         //when
-        assertThrows(TransactionNotFoundException.class, () ->  repository.deleteTransaction(UNEXISTENT_TRANSACTION_ID));
+        assertThrows(TransactionNotFoundException.class, () ->  repository.deleteById(UNEXISTENT_TRANSACTION_ID));
     }
     @Test
     void should_delete_a_transaction() throws Exception {
@@ -142,10 +142,10 @@ class JSONTransactionRepositoryTest {
         JSONTransactionRepository repository = new JSONTransactionRepository(newPath, objectMapper);
         Transaction firstTransaction = Transaction.builder().id("1").name("transaction1").amount(300).date(LocalDateTime.parse("2023-03-15T13:14:15")).description("gold").type(DEBIT).build();
         //when
-        repository.deleteTransaction("2");
+        repository.deleteById("2");
 
         //then
-        List<Transaction> transactions = repository.getTransactions();
+        List<Transaction> transactions = repository.findAll();
 
         assertThat(transactions).containsExactly(firstTransaction);
     }
@@ -163,7 +163,7 @@ class JSONTransactionRepositoryTest {
 
         repository.updateTransaction(newTransaction);
 
-        List<Transaction> transactions = repository.getTransactions();
+        List<Transaction> transactions = repository.findAll();
         assertThat(transactions).containsExactly(firstTransaction, newTransaction);
     }
 

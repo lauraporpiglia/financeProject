@@ -5,11 +5,12 @@ import com.mentoring.mentoringprj.domain.Transaction;
 import com.mentoring.mentoringprj.domain.TransactionWithoutId;
 import com.mentoring.mentoringprj.exceptions.TransactionNotFoundException;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
-import com.mentoring.mentoringprj.repository.JSONTransactionRepository;
+import com.mentoring.mentoringprj.repository.TransactionRepository;
+import com.mentoring.mentoringprj.repository.entity.TransactionEntity;
 import com.mentoring.mentoringprj.util.LocalDateTimeProvider;
 import com.mentoring.mentoringprj.util.TransactionCalculator;
 import com.mentoring.mentoringprj.util.TransactionFilter;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,14 +21,14 @@ import java.util.Optional;
 @Service
 public class AccountService {
 
-    private final JSONTransactionRepository repository;
+    private final TransactionRepository repository;
     private final TransactionCalculator calculator;
 
     private final TransactionFilter filter;
 
     private final LocalDateTimeProvider dateProvider;
 
-    public AccountService(@Qualifier("json") JSONTransactionRepository repository,
+    public AccountService(TransactionRepository repository,
                           TransactionCalculator calculator,
                           TransactionFilter filter,
                           LocalDateTimeProvider dateProvider) {
@@ -39,7 +40,8 @@ public class AccountService {
 
 
     public AccountDetails getAccountDetails(Optional<LocalDateTime> from, Optional<LocalDateTime> to) throws TransactionReadException {
-        List<Transaction> transactions = repository.getTransactions();
+        List<Transaction> transactions = repository.findAll().stream()
+                .map(TransactionEntity::toTransaction).toList();
 
         if (from.isPresent() && to.isPresent()) {
             transactions = filter.getTransactionsBetween(transactions, from.get(), to.get());
@@ -60,28 +62,29 @@ public class AccountService {
         return getAccountDetails(Optional.empty(), Optional.empty());
     }
 
-    public AccountDetails addTransaction(TransactionWithoutId transaction) throws TransactionReadException, IOException {
+    public AccountDetails saveTransaction(TransactionWithoutId transaction) throws TransactionReadException, IOException {
         Transaction transactionToAdd = transaction.toNewTransaction();
-        repository.addTransaction(transactionToAdd);
+        TransactionEntity transactionEntity = transactionToAdd.toTransactionEntity();
+        repository.save(transactionEntity);
+        return getAccountDetails();
+    }
+    public AccountDetails saveTransaction(String id, TransactionWithoutId transaction) throws TransactionReadException {
+        Transaction transactionToAdd = transaction.toNewTransaction();
+        TransactionEntity transactionEntity = transactionToAdd.toTransactionEntity();
+        transactionEntity.setId(id);
+
+        repository.save(transactionEntity);
+
         return getAccountDetails();
     }
 
 
     public AccountDetails delete(String transactionId) throws TransactionReadException, TransactionNotFoundException, IOException {
-        repository.deleteTransaction(transactionId);
-        return getAccountDetails();
-    }
-
-    public AccountDetails updateTransaction(String id, TransactionWithoutId transactionToUpdate) throws TransactionReadException, IOException, TransactionNotFoundException {
-        Transaction transaction = Transaction.builder()
-                .id(id)
-                .name(transactionToUpdate.getName())
-                .description(transactionToUpdate.getDescription())
-                .type(transactionToUpdate.getType())
-                .amount(transactionToUpdate.getAmount())
-                .date(transactionToUpdate.getDate())
-                .build();
-      repository.updateTransaction(transaction);
+      try{
+          repository.deleteById(transactionId);
+      }catch(EmptyResultDataAccessException erdae){
+          throw new TransactionNotFoundException(String.format("transaction with id %s not found",transactionId));
+      }
         return getAccountDetails();
     }
 }

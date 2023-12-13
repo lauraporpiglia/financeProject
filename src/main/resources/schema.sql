@@ -1,6 +1,6 @@
-CREATE TABLE TRANSACTIONS
+CREATE TABLE IF NOT EXISTS TRANSACTION
 (
-    id          VARCHAR(36) PRIMARY KEY,
+    id          VARCHAR(40) PRIMARY KEY,
     name        VARCHAR(255),
     amount      INT,
     description VARCHAR(10),

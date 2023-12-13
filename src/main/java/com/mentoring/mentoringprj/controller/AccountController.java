@@ -34,7 +34,7 @@ public class AccountController {
 
     @PostMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public AccountDetails addTransaction(@RequestBody TransactionWithoutId transaction) throws TransactionReadException, IOException {
-        return accountService.addTransaction(transaction);
+        return accountService.saveTransaction(transaction);
     }
 
     @DeleteMapping(path = "{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -44,7 +44,7 @@ public class AccountController {
 
    @PutMapping(path = "/update/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public AccountDetails updateTransaction(@PathVariable("transactionId") String transactionId, @RequestBody TransactionWithoutId transaction) throws TransactionReadException, IOException, TransactionNotFoundException {
-        return accountService.updateTransaction(transactionId,transaction);
+        return accountService.saveTransaction(transactionId,transaction);
     }
 
     @ExceptionHandler(value = TransactionNotFoundException.class)

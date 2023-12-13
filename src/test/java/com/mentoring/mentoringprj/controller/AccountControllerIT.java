@@ -6,42 +6,53 @@ import com.mentoring.mentoringprj.domain.TransactionWithoutId;
 import com.mentoring.mentoringprj.domain.TransactionType;
 import com.mentoring.mentoringprj.exceptions.TransactionNotFoundException;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
+import com.mentoring.mentoringprj.repository.TransactionRepository;
 import com.mentoring.mentoringprj.service.AccountService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
+
+@ActiveProfiles("integration")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AccountControllerIT {
     private static final String TRANSACTION_ID_1 = "2bf372d1-7379-42df-816a-c09614904f33";
     private static final String TRANSACTION_ID_2 = "3bf372d1-7379-42df-816a-c09614904f33";
-    @MockBean
+    @Autowired
     private AccountService accountService;
 
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Autowired
+    private TransactionRepository repository;
+
     private final String UNEXISTENT_ID = "UNEXISTENT_ID";
 
+    @BeforeEach
+    void beforeEach() {
+        repository.deleteAll();
+    }
+
     @Test
-    void should_get_all_transactions() throws TransactionReadException {
-        Transaction expectedTransaction = Transaction.builder().amount(300).type(TransactionType.CREDIT).build();
+    void should_get_all_transactions() {
+        Transaction expectedTransaction = Transaction.builder().id("1").amount(300).type(TransactionType.CREDIT).build();
         List<Transaction> expectedTransactions = List.of(expectedTransaction);
         AccountDetails expectedAccountDetails = AccountDetails.builder().balance(300).transactions(expectedTransactions).build();
-        when(accountService.getAccountDetails(Optional.empty(), Optional.empty())).thenReturn(expectedAccountDetails);
+        repository.save(expectedTransaction.toTransactionEntity());
 
         ResponseEntity<AccountDetails> response = restTemplate.getForEntity("/account", AccountDetails.class);
 
@@ -50,13 +61,13 @@ class AccountControllerIT {
     }
 
     @Test
-    void should_get_all_transactions_filtered_byDate() throws TransactionReadException {
+    void should_get_all_transactions_filtered_byDate() {
         LocalDateTime fromDate = LocalDateTime.of(2023, 11, 21, 13, 14);
         LocalDateTime toDate = LocalDateTime.of(2023, 11, 22, 14, 15);
-        Transaction expectedTransaction = Transaction.builder().amount(300).type(TransactionType.CREDIT).build();
+        Transaction expectedTransaction = Transaction.builder().id("1").amount(300).type(TransactionType.CREDIT).date(toDate).build();
         List<Transaction> expectedTransactions = List.of(expectedTransaction);
         AccountDetails expectedAccountDetails = AccountDetails.builder().balance(300).transactions(expectedTransactions).build();
-        when(accountService.getAccountDetails(Optional.of(fromDate), Optional.of(toDate))).thenReturn(expectedAccountDetails);
+        repository.save(expectedTransaction.toTransactionEntity());
 
         String url = UriComponentsBuilder.fromPath("/account")
                 .queryParam("from", fromDate.toString())
@@ -70,46 +81,51 @@ class AccountControllerIT {
     }
 
     @Test
-    void should_add_transactions() throws TransactionReadException, IOException {
+    void should_add_transactions() {
         TransactionWithoutId newTransactionWithoutId = TransactionWithoutId.builder().amount(150).type(TransactionType.CREDIT).build();
-        Transaction newTransaction = newTransactionWithoutId.toNewTransaction();
-        Transaction existingTransaction = Transaction.builder().amount(300).type(TransactionType.CREDIT).build();
-        List<Transaction> expectedTransactions = List.of(existingTransaction, newTransaction);
-        AccountDetails expectedAccountDetails = AccountDetails.builder().balance(450).transactions(expectedTransactions).build();
-        when(accountService.addTransaction(newTransactionWithoutId)).thenReturn(expectedAccountDetails);
+        Transaction existingTransaction = Transaction.builder().id("1").amount(300).type(TransactionType.CREDIT).build();
+        repository.save(existingTransaction.toTransactionEntity());
 
         ResponseEntity<AccountDetails> response = restTemplate.postForEntity("/account", newTransactionWithoutId, AccountDetails.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(expectedAccountDetails);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getBalance()).isEqualTo(450);
+        assertThat(response.getBody().getTransactions().get(0)).isEqualTo(existingTransaction);
+        assertThat(response.getBody().getTransactions().get(1).getId()).isNotNull();
+        assertThat(response.getBody().getTransactions().get(1).getAmount()).isEqualTo(newTransactionWithoutId.getAmount());
+        assertThat(response.getBody().getTransactions().get(1).getType()).isEqualTo(newTransactionWithoutId.getType());
     }
 
     @Test
     void should_delete_a_transaction() throws TransactionReadException, IOException, TransactionNotFoundException {
+        //given
         Transaction transactionToKeep = Transaction.builder().id(TRANSACTION_ID_1).amount(300).type(TransactionType.CREDIT).build();
-
+        Transaction transactionToDelete = Transaction.builder().id(TRANSACTION_ID_2).amount(100).type(TransactionType.CREDIT).build();
         List<Transaction> expectedTransactions = Collections.singletonList(transactionToKeep);
         AccountDetails expectedAccountDetails = AccountDetails.builder().balance(300).transactions(expectedTransactions).build();
-
-        when(accountService.delete(TRANSACTION_ID_2)).thenReturn(expectedAccountDetails);
+        repository.saveAll(List.of(transactionToKeep.toTransactionEntity(), transactionToDelete.toTransactionEntity()));
+        //when
         ResponseEntity<AccountDetails> response = restTemplate.exchange("/account/%s".formatted(TRANSACTION_ID_2), HttpMethod.DELETE, HttpEntity.EMPTY, AccountDetails.class);
-
+//then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(expectedAccountDetails);
     }
 
     @Test
-    void should_update_a_transaction() throws TransactionReadException, IOException, TransactionNotFoundException {
+    void should_update_a_transaction() {
         Transaction existingTransaction = Transaction.builder().id(TRANSACTION_ID_1).amount(300).type(TransactionType.CREDIT).build();
         Transaction transactionToUpdate = Transaction.builder().id(TRANSACTION_ID_2).amount(150).type(TransactionType.CREDIT).build();
-        List<Transaction> expectedTransactions = List.of(existingTransaction, transactionToUpdate);
-        TransactionWithoutId updateTransaction = TransactionWithoutId.builder().amount(150).type(TransactionType.CREDIT).build();
+        Transaction updateTransaction = Transaction.builder().id(TRANSACTION_ID_2).amount(200).type(TransactionType.CREDIT).build();
 
-        AccountDetails expectedAccountDetails = AccountDetails.builder().balance(450).transactions(expectedTransactions).build();
-        when(accountService.updateTransaction(transactionToUpdate.getId(), updateTransaction)).thenReturn(expectedAccountDetails);
+        List<Transaction> expectedTransactions = List.of(existingTransaction, updateTransaction);
+
+        AccountDetails expectedAccountDetails = AccountDetails.builder().balance(500).transactions(expectedTransactions).build();
+        repository.saveAll(List.of(existingTransaction.toTransactionEntity(), transactionToUpdate.toTransactionEntity()));
         RequestEntity<TransactionWithoutId> request = RequestEntity
                 .put("/account/update/{transactionId}", transactionToUpdate.getId())
-                .body(updateTransaction);
+                .body(TransactionWithoutId.builder().amount(updateTransaction.getAmount()).type(updateTransaction.getType()).build());
+
 
         ResponseEntity<AccountDetails> response = restTemplate.exchange(request, AccountDetails.class);
 
@@ -118,19 +134,10 @@ class AccountControllerIT {
     }
 
     @Test
-    void should_throw_exception_when_delete_a_nonexistent_transaction() throws Exception {
-        when(accountService.delete(UNEXISTENT_ID)).thenThrow(new TransactionNotFoundException(""));
+    void should_return404_when_delete_a_nonexistent_transaction() {
         ResponseEntity<AccountDetails> response = restTemplate.exchange("/account/%s".formatted(UNEXISTENT_ID), HttpMethod.DELETE, HttpEntity.EMPTY, AccountDetails.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
-    @Test
-    void should_throw_exception_when_update_an_nonexistent_transaction() throws Exception {
-        TransactionWithoutId updateTransaction = TransactionWithoutId.builder().amount(150).build();
-        when(accountService.updateTransaction(UNEXISTENT_ID, updateTransaction)).thenThrow(new TransactionNotFoundException(""));
-        ResponseEntity<AccountDetails> response = restTemplate.exchange("/update/%s".formatted(UNEXISTENT_ID), HttpMethod.PUT, HttpEntity.EMPTY, AccountDetails.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-    }
 }

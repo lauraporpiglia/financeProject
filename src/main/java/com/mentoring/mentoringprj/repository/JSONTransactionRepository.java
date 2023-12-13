@@ -32,7 +32,7 @@ public class JSONTransactionRepository {
         this.objectMapper = objectMapper;
     }
 
-    public List<Transaction> getTransactions() throws TransactionReadException {
+    public List<Transaction> findAll() throws TransactionReadException {
         TransactionWrapper transactionWrapper;
         try {
             String fileContent = Files.readString(path);//never do in prod
@@ -54,8 +54,8 @@ public class JSONTransactionRepository {
     }
 
 
-    public void addTransaction(Transaction transaction) throws TransactionReadException, IOException {
-        List<Transaction> transactions = getTransactions();
+    public void save(Transaction transaction) throws TransactionReadException, IOException {
+        List<Transaction> transactions = findAll();
         transactions.add(transaction);
 
         TransactionWrapper transWrapper = new TransactionWrapper();
@@ -70,11 +70,11 @@ public class JSONTransactionRepository {
         IOUtils.closeQuietly(outStream);
     }
 
-    public void deleteTransaction(String id) throws TransactionReadException, IOException, TransactionNotFoundException {
+    public void deleteById(String id) throws TransactionReadException, IOException, TransactionNotFoundException {
         if (getTransactionsById(id).isEmpty()) {
             throw new TransactionNotFoundException("Transaction not found with id %s".formatted(id));
         }
-        List<Transaction> transactions = getTransactions();
+        List<Transaction> transactions = findAll();
         List<Transaction> filteredTransactions = transactions.stream().filter(transaction -> !transaction.getId().equals(id)).toList();
 
         if (filteredTransactions.isEmpty()) {
@@ -92,8 +92,8 @@ public class JSONTransactionRepository {
     }
 
     public void updateTransaction(Transaction transaction) throws TransactionReadException, IOException, TransactionNotFoundException {
-        deleteTransaction(transaction.getId());
-        addTransaction(transaction);
+        deleteById(transaction.getId());
+        save(transaction);
     }
 
 
@@ -106,7 +106,7 @@ public class JSONTransactionRepository {
     }
 
     private Optional<Transaction> getTransactionsById(String transactionId) throws TransactionReadException {
-        return getTransactions().stream()
+        return findAll().stream()
                 .filter(t -> t.getId().equals(transactionId))
                 .findFirst();
     }
