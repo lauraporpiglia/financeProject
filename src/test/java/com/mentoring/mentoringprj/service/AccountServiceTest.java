@@ -59,6 +59,24 @@ class AccountServiceTest {
     }
 
     @Test
+    void should_return_a_single_transaction_byId() {
+        TransactionEntity expectedTransaction = TransactionEntity.builder().type(String.valueOf(TransactionType.CREDIT)).id("123").amount(300).build();
+        when(repository.findById("123")).thenReturn(Optional.of(expectedTransaction));
+
+        Optional<Transaction> transaction = service.getTransaction("123");
+        assertThat(transaction).isPresent();
+        assertThat(transaction.get()).isEqualTo(expectedTransaction.toTransaction());
+    }
+
+    @Test
+    void should_return_an_emptyOptional_whenTransactionById_notFound() {
+
+        Optional<Transaction> transaction = service.getTransaction("123");
+
+        assertThat(transaction).isNotPresent();
+    }
+
+    @Test
     void should_return_transactions() throws TransactionReadException, AmountException {
         TransactionEntity expectedTransaction = TransactionEntity.builder().type(String.valueOf(TransactionType.CREDIT)).amount(300).build();
         when(repository.findAll()).thenReturn(List.of(expectedTransaction)); //remember this is a given not a when ARRANGE
@@ -69,6 +87,7 @@ class AccountServiceTest {
         assertThat(accountDetails.getTransactions()).containsExactly(expectedTransaction.toTransaction());
         assertThat(accountDetails.getBalance()).isEqualTo(300);
     }
+
     @Test
     void should_return_filtered_transactions() throws TransactionReadException, AmountException {
 
@@ -125,7 +144,7 @@ class AccountServiceTest {
     }
 
     @Test
-    void should_call_repository_correctly_when_saving_a_transaction() throws Exception{
+    void should_call_repository_correctly_when_saving_a_transaction() throws Exception {
         //given
 
         TransactionWithoutId newTransactionWithoutId = TransactionWithoutId.builder().type(TransactionType.CREDIT).amount(200).build();
@@ -141,13 +160,14 @@ class AccountServiceTest {
         assertThat(addedTransaction.getAmount()).isEqualTo(newTransactionWithoutId.getAmount());
         assertThat(addedTransaction.getId()).isNotNull();
     }
+
     @Test
-    void should_call_repository_correctly_when_saving_a_transactionWithId() throws Exception{
+    void should_call_repository_correctly_when_saving_a_transactionWithId() throws Exception {
         //given
 
         TransactionWithoutId newTransactionWithoutId = TransactionWithoutId.builder().type(TransactionType.CREDIT).amount(200).build();
         //when
-        service.saveTransaction("id",newTransactionWithoutId);
+        service.saveTransaction("id", newTransactionWithoutId);
 
         //then
         InOrder inOrder = inOrder(repository);
@@ -160,7 +180,7 @@ class AccountServiceTest {
     }
 
     @Test
-    void should_return_correct_results_when_saving_transaction() throws Exception{
+    void should_return_correct_results_when_saving_transaction() throws Exception {
         //given
         TransactionEntity existingTransaction = TransactionEntity.builder().type(TransactionType.CREDIT.toString()).amount(300).build();
         TransactionWithoutId newTransactionWithoutId = TransactionWithoutId.builder().type(TransactionType.CREDIT).amount(200).build();
@@ -180,8 +200,9 @@ class AccountServiceTest {
         assertThat(accountDetails.getTransactions()).containsExactly(existingTransaction.toTransaction(), newTransaction.toTransaction());
         assertThat(accountDetails.getBalance()).isEqualTo(500);
     }
+
     @Test
-    void should_return_correct_results_when_deleting_transaction() throws Exception{
+    void should_return_correct_results_when_deleting_transaction() throws Exception {
         //given
         TransactionEntity remainingTransaction = TransactionEntity.builder().id("1").type(TransactionType.CREDIT.toString()).amount(300).build();
         when(repository.findAll()).thenReturn(List.of(remainingTransaction));
@@ -194,8 +215,9 @@ class AccountServiceTest {
         assertThat(accountDetails.getTransactions()).containsExactly(remainingTransaction.toTransaction());
         assertThat(accountDetails.getBalance()).isEqualTo(300);
     }
+
     @Test
-    void should_call_repository_correctly_when_deleting_a_transaction() throws Exception{
+    void should_call_repository_correctly_when_deleting_a_transaction() throws Exception {
         //given
         TransactionEntity remainingTransaction = TransactionEntity.builder().id("1").type(TransactionType.CREDIT.toString()).amount(300).build();
         when(repository.findAll()).thenReturn(List.of(remainingTransaction));

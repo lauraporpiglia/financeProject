@@ -87,4 +87,9 @@ public class AccountService {
       }
         return getAccountDetails();
     }
+
+    public Optional<Transaction> getTransaction(String id) {
+        return repository.findById(id)
+                .map(TransactionEntity::toTransaction);
+    }
 }
