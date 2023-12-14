@@ -1,6 +1,7 @@
 package com.mentoring.mentoringprj.controller;
 
 import com.mentoring.mentoringprj.domain.AccountDetails;
+import com.mentoring.mentoringprj.domain.Transaction;
 import com.mentoring.mentoringprj.domain.TransactionWithoutId;
 import com.mentoring.mentoringprj.exceptions.TransactionNotFoundException;
 import com.mentoring.mentoringprj.exceptions.TransactionReadException;
@@ -32,6 +33,16 @@ public class AccountController {
         return accountService.getAccountDetails(from, to);
     }
 
+    @GetMapping(path = "{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Transaction> getTransactionById(@PathVariable("transactionId") String transactionId) throws TransactionReadException {
+        Optional<Transaction> transaction = accountService.getTransaction(transactionId);
+     //@todo note check this
+        return transaction
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+
     @PostMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public AccountDetails addTransaction(@RequestBody TransactionWithoutId transaction) throws TransactionReadException, IOException {
         return accountService.saveTransaction(transaction);
@@ -42,13 +53,13 @@ public class AccountController {
         return accountService.delete(transactionId);
     }
 
-   @PutMapping(path = "/update/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/update/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public AccountDetails updateTransaction(@PathVariable("transactionId") String transactionId, @RequestBody TransactionWithoutId transaction) throws TransactionReadException, IOException, TransactionNotFoundException {
-        return accountService.saveTransaction(transactionId,transaction);
+        return accountService.saveTransaction(transactionId, transaction);
     }
 
     @ExceptionHandler(value = TransactionNotFoundException.class)
-    public ResponseEntity<String> handleTransactionNotFound(){
+    public ResponseEntity<String> handleTransactionNotFound() {
         return ResponseEntity.notFound().build();
     }
 }

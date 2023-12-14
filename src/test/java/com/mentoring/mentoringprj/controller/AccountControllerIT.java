@@ -61,6 +61,25 @@ class AccountControllerIT {
     }
 
     @Test
+    void should_get_a_single_transaction() {
+        //given
+        Transaction expectedTransaction = Transaction.builder().id("1").amount(300).type(TransactionType.CREDIT).build();
+        repository.save(expectedTransaction.toTransactionEntity());
+         //when
+        ResponseEntity<Transaction> response = restTemplate.getForEntity("/account/1", Transaction.class);
+        //then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(expectedTransaction);
+    }
+
+    @Test
+    void should_return404_when_retrieving_a_nonExistent_Single_transaction() {
+        ResponseEntity<Transaction> response = restTemplate.getForEntity("/account/1", Transaction.class);
+        //then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
     void should_get_all_transactions_filtered_byDate() {
         LocalDateTime fromDate = LocalDateTime.of(2023, 11, 21, 13, 14);
         LocalDateTime toDate = LocalDateTime.of(2023, 11, 22, 14, 15);
