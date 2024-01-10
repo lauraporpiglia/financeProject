@@ -11,22 +11,20 @@ class NumbersToWordsTest {
     private NumbersToWords converter;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         converter = new NumbersToWords();
     }
 
     @Test
-    public void testConvertIntegerToWords() {
-        try {
-            String result = converter.convertIntegerToWords(123);
-            assertEquals("one hundred twenty three", result);
-        } catch (TooRichException e) {
-            fail("TooRichException should not be thrown");
-        }
+    public void testConvertIntegerToWords() throws Exception {
+        
+            assertEquals("one hundred twenty three", converter.convertIntegerToWords(123));
+      
+       
     }
 
     @Test
-    public void testConvertDoubleToWords() throws TooRichException, CurrencyUnsupportedException {
+    public void testConvertDoubleToWords() throws Exception {
 
         assertEquals("one hundred twenty three pounds forty five p", converter.convertDoubleToWords("123.45", "pound"));
 
@@ -34,7 +32,7 @@ class NumbersToWordsTest {
     }
 
     @Test
-    public void testConvertDoubleToWordsExceptions() throws TooRichException, CurrencyUnsupportedException {
+    public void testConvertDoubleToWordsExceptions() {
 
         assertThrows(CurrencyUnsupportedException.class, () ->
                 converter.convertDoubleToWords("123.45", "usd"));
@@ -69,13 +67,13 @@ class NumbersToWordsTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenCurrencyNotSupported() throws Exception {
+    void shouldThrowExceptionWhenCurrencyNotSupported() {
         assertThrows(CurrencyUnsupportedException.class, () ->
                 converter.convertDoubleToWords("1000001", "FAKE_MONEY"));
     }
 
     @Test
-    void shouldThrowExceptionWhenOverMoneyLimit() throws Exception {
+    void shouldThrowExceptionWhenOverMoneyLimit() {
         assertThrows(TooRichException.class, () ->
                 converter.convertIntegerToWords(1000001));
     }
