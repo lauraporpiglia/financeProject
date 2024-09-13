@@ -1,10 +1,13 @@
 
 # Finance Project
 
-**Endpoints  **
-TBD
 
-### Technologies
+ OpenAPI docs 
+Run [FinanceDashboard.java](src/main/java/com/finance/financedashboard/FinanceDashboard.java) 
+ http://localhost:8080/swagger-ui/index.html
+
+###
+ Technologies
 ---  
 - Java 17
 - Spring Boot 3.0
