@@ -19,14 +19,13 @@ Run [FinanceDashboard.java](src/main/java/com/finance/financedashboard/FinanceDa
 - H2 Database (In-Memory) - JPA Connection
 - Spring Boot Actuator
 - Docker
-- Postman - API testing
-- Open Api - Swagger setup
-
+- Postman - API testing manual TODO: add json
 
 next ? 
-
+- Postman - API testing automate
+- Open Api - Swagger setup
 - API versioning
-- CI/CD - ???
+- CI/CD - ??? 
 - Postman - Requestly / automate????
 - Spring Cache
 - Resilience4j (Rate Limiter)
