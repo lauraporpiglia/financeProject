@@ -2,12 +2,12 @@
 # Finance Project
 
 
- OpenAPI docs 
-Run [FinanceDashboard.java](src/main/java/com/finance/financedashboard/FinanceDashboard.java) 
- http://localhost:8080/swagger-ui/index.html
+OpenAPI docs
+Run [FinanceDashboard.java](src/main/java/com/finance/financedashboard/FinanceDashboard.java)
+http://localhost:8080/swagger-ui/index.html
 
 ###
- Technologies
+Technologies
 ---  
 - Java 17
 - Spring Boot 3.0
@@ -23,7 +23,7 @@ Run [FinanceDashboard.java](src/main/java/com/finance/financedashboard/FinanceDa
 - Open Api - Swagger setup
 
 
-next ? 
+next ?
 
 - API versioning
 - CI/CD - ???
