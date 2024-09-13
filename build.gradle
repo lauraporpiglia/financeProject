@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.0.2'
     id 'io.spring.dependency-management' version '1.1.0'
+
 }
 
 group = 'com.finance'
@@ -22,6 +23,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
+
+    //swagger dependencies
+    implementation 'org.springdoc:springdoc-openapi-starter-common:2.2.0'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.0.3'
+    implementation 'io.swagger.core.v3:swagger-annotations-jakarta:2.2.15'
 
 //@todo:remove
 //    implementation 'com.opencsv:opencsv:5.7.1'
