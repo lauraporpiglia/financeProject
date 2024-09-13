@@ -39,8 +39,6 @@ class AccountControllerIT {
     @Autowired
     private TransactionRepository repository;
 
-    private final String UNEXISTENT_ID = "UNEXISTENT_ID";
-
     @BeforeEach
     void beforeEach() {
         repository.deleteAll();
@@ -53,7 +51,7 @@ class AccountControllerIT {
         AccountDetails expectedAccountDetails = AccountDetails.builder().balance(300).transactions(expectedTransactions).build();
         repository.save(expectedTransaction.toTransactionEntity());
 
-        ResponseEntity<AccountDetails> response = restTemplate.getForEntity("/account", AccountDetails.class);
+        ResponseEntity<AccountDetails> response = restTemplate.getForEntity("/dashboard", AccountDetails.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(expectedAccountDetails);
@@ -65,7 +63,7 @@ class AccountControllerIT {
         Transaction expectedTransaction = Transaction.builder().id("1").amount(300).type(TransactionType.CREDIT).build();
         repository.save(expectedTransaction.toTransactionEntity());
          //when
-        ResponseEntity<Transaction> response = restTemplate.getForEntity("/account/1", Transaction.class);
+        ResponseEntity<Transaction> response = restTemplate.getForEntity("/dashboard/1", Transaction.class);
         //then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(expectedTransaction);
@@ -73,7 +71,7 @@ class AccountControllerIT {
 
     @Test
     void should_return404_when_retrieving_a_nonExistent_Single_transaction() {
-        ResponseEntity<Transaction> response = restTemplate.getForEntity("/account/1", Transaction.class);
+        ResponseEntity<Transaction> response = restTemplate.getForEntity("/dashboard/1", Transaction.class);
         //then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
@@ -87,7 +85,7 @@ class AccountControllerIT {
         AccountDetails expectedAccountDetails = AccountDetails.builder().balance(300).transactions(expectedTransactions).build();
         repository.save(expectedTransaction.toTransactionEntity());
 
-        String url = UriComponentsBuilder.fromPath("/account")
+        String url = UriComponentsBuilder.fromPath("/dashboard")
                 .queryParam("from", fromDate.toString())
                 .queryParam("to", toDate.toString())
                 .toUriString();
@@ -104,7 +102,7 @@ class AccountControllerIT {
         Transaction existingTransaction = Transaction.builder().id("1").amount(300).type(TransactionType.CREDIT).build();
         repository.save(existingTransaction.toTransactionEntity());
 
-        ResponseEntity<AccountDetails> response = restTemplate.postForEntity("/account", newTransactionWithoutId, AccountDetails.class);
+        ResponseEntity<AccountDetails> response = restTemplate.postForEntity("/dashboard", newTransactionWithoutId, AccountDetails.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
@@ -124,7 +122,7 @@ class AccountControllerIT {
         AccountDetails expectedAccountDetails = AccountDetails.builder().balance(300).transactions(expectedTransactions).build();
         repository.saveAll(List.of(transactionToKeep.toTransactionEntity(), transactionToDelete.toTransactionEntity()));
         //when
-        ResponseEntity<AccountDetails> response = restTemplate.exchange("/account/%s".formatted(TRANSACTION_ID_2), HttpMethod.DELETE, HttpEntity.EMPTY, AccountDetails.class);
+        ResponseEntity<AccountDetails> response = restTemplate.exchange("/dashboard/%s".formatted(TRANSACTION_ID_2), HttpMethod.DELETE, HttpEntity.EMPTY, AccountDetails.class);
 //then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(expectedAccountDetails);
@@ -141,7 +139,7 @@ class AccountControllerIT {
         AccountDetails expectedAccountDetails = AccountDetails.builder().balance(500).transactions(expectedTransactions).build();
         repository.saveAll(List.of(existingTransaction.toTransactionEntity(), transactionToUpdate.toTransactionEntity()));
         RequestEntity<TransactionWithoutId> request = RequestEntity
-                .put("/account/update/{transactionId}", transactionToUpdate.getId())
+                .put("/dashboard/update/{transactionId}", transactionToUpdate.getId())
                 .body(TransactionWithoutId.builder().amount(updateTransaction.getAmount()).type(updateTransaction.getType()).build());
 
 
@@ -153,7 +151,7 @@ class AccountControllerIT {
 
     @Test
     void should_return404_when_delete_a_nonexistent_transaction() {
-        ResponseEntity<AccountDetails> response = restTemplate.exchange("/account/%s".formatted(UNEXISTENT_ID), HttpMethod.DELETE, HttpEntity.EMPTY, AccountDetails.class);
+        ResponseEntity<AccountDetails> response = restTemplate.exchange("/dashboard/%s".formatted("UNEXISTENT_ID"), HttpMethod.DELETE, HttpEntity.EMPTY, AccountDetails.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
