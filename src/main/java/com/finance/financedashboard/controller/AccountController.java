@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @ControllerAdvice
 @RestController
-@RequestMapping("/account")
+@RequestMapping("/dashboard")
 public class AccountController {
 
     private final AccountService accountService;
@@ -36,7 +36,7 @@ public class AccountController {
     @GetMapping(path = "{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Transaction> getTransactionById(@PathVariable("transactionId") String transactionId) throws TransactionReadException {
         Optional<Transaction> transaction = accountService.getTransaction(transactionId);
-     //@todo note check this
+
         return transaction
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
