@@ -32,4 +32,14 @@ TBD
 
 ### TEST .....
 
-TBD
+NewMan
+Docker for Newman
+    docker run -v $(pwd):/etc/newman -t postman/newman run testing/t_suite_1.json
+
+brew install node
+npm install -g newman
+newman -v
+
+
+suggestion:newman run /path/to/your_collection.json -e /path/to/your_environment.json
+

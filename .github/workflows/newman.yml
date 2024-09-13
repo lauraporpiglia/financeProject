@@ -19,4 +19,4 @@ jobs:
         run: npm install -g newman
 
       - name: Run Postman Collection
-        run: newman run /path/to/your_collection.json -e /path/to/your_environment.json
+        run: newman run testing/t_suite_1.json -e testing/env.json
