@@ -1,0 +1,22 @@
+name: Run Postman Collection
+
+on: [push, pull_request]
+
+jobs:
+  postman_tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install Newman
+        run: npm install -g newman
+
+      - name: Run Postman Collection
+        run: newman run /path/to/your_collection.json -e /path/to/your_environment.json
