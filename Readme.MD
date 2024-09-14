@@ -24,7 +24,8 @@ Technologies
 
 
 next ?
-
+- log 
+- metrics
 - API versioning
 - CI/CD - ???
 - Postman - Requestly / automate????
