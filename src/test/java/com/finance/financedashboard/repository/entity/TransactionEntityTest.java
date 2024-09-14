@@ -4,7 +4,6 @@ import com.finance.financedashboard.domain.Transaction;
 import com.finance.financedashboard.domain.TransactionType;
 import org.junit.jupiter.api.Test;
 
-
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class TransactionEntityTest {

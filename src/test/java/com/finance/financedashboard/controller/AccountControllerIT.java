@@ -2,10 +2,8 @@ package com.finance.financedashboard.controller;
 
 import com.finance.financedashboard.domain.AccountDetails;
 import com.finance.financedashboard.domain.Transaction;
-import com.finance.financedashboard.domain.TransactionWithoutId;
 import com.finance.financedashboard.domain.TransactionType;
-import com.finance.financedashboard.exceptions.TransactionNotFoundException;
-import com.finance.financedashboard.exceptions.TransactionReadException;
+import com.finance.financedashboard.domain.TransactionWithoutId;
 import com.finance.financedashboard.repository.TransactionRepository;
 import com.finance.financedashboard.service.AccountService;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +15,6 @@ import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -114,7 +111,7 @@ class AccountControllerIT {
     }
 
     @Test
-    void should_delete_a_transaction() throws TransactionReadException, IOException, TransactionNotFoundException {
+    void should_delete_a_transaction() {
         //given
         Transaction transactionToKeep = Transaction.builder().id(TRANSACTION_ID_1).amount(300).type(TransactionType.CREDIT).build();
         Transaction transactionToDelete = Transaction.builder().id(TRANSACTION_ID_2).amount(100).type(TransactionType.CREDIT).build();

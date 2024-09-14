@@ -1,11 +1,12 @@
 package com.finance.financedashboard.util;
 
-import com.finance.financedashboard.exceptions.*;
+import com.finance.financedashboard.exceptions.CurrencyUnsupportedException;
+import com.finance.financedashboard.exceptions.TooRichException;
 import org.springframework.stereotype.Component;
 
-import java.util.function.Function;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 @Component
 public class NumbersToWords {
@@ -60,7 +61,7 @@ public class NumbersToWords {
         }
         if (number >= MAX_SUPPORTED_NUMBER) {
             throw new TooRichException("Number too large to be converted");
-          //  return "Number too large to be converted";
+          //  log "Number too large to be converted";
         }
         String words = "";
         if (number >= THOUSAND) {

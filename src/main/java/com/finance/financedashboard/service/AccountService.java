@@ -13,7 +13,6 @@ import com.finance.financedashboard.util.TransactionFilter;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +38,7 @@ public class AccountService {
     }
 
 
-    public AccountDetails getAccountDetails(Optional<LocalDateTime> from, Optional<LocalDateTime> to) throws TransactionReadException {
+    public AccountDetails getAccountDetails(Optional<LocalDateTime> from, Optional<LocalDateTime> to)  {
         List<Transaction> transactions = repository.findAll().stream()
                 .map(TransactionEntity::toTransaction).toList();
 
@@ -58,11 +57,11 @@ public class AccountService {
                 .build();
     }
 
-    public AccountDetails getAccountDetails() throws TransactionReadException {
+    public AccountDetails getAccountDetails() {
         return getAccountDetails(Optional.empty(), Optional.empty());
     }
 
-    public AccountDetails saveTransaction(TransactionWithoutId transaction) throws TransactionReadException, IOException {
+    public AccountDetails saveTransaction(TransactionWithoutId transaction) throws TransactionReadException {
         Transaction transactionToAdd = transaction.toNewTransaction();
         TransactionEntity transactionEntity = transactionToAdd.toTransactionEntity();
         repository.save(transactionEntity);
@@ -79,7 +78,7 @@ public class AccountService {
     }
 
 
-    public AccountDetails delete(String transactionId) throws TransactionReadException, TransactionNotFoundException, IOException {
+    public AccountDetails delete(String transactionId) throws TransactionReadException, TransactionNotFoundException {
       try{
           repository.deleteById(transactionId);
       }catch(EmptyResultDataAccessException erdae){
