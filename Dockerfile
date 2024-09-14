@@ -4,4 +4,4 @@ COPY . .
 #run the gradle command that builds the jar file
 RUN ./gradlew build
 
-CMD ["java", "-jar", "./build/libs/mentoringPrj.jar"]
+CMD ["java", "-jar", "./build/libs/financeDashboard.jar"]
