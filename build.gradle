@@ -29,7 +29,8 @@ dependencies {
     //swagger dependencies
     implementation 'org.springdoc:springdoc-openapi-starter-common:2.2.0'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.0.3'
-    implementation 'io.swagger.core.v3:swagger-annotations-jakarta:2.2.15'
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation:3.3.3'
 
 //@todo:remove
 //    implementation 'com.opencsv:opencsv:5.7.1'
