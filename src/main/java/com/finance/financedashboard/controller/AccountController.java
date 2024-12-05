@@ -34,7 +34,7 @@ public class AccountController {
     }
 
     @GetMapping(path = "{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Transaction> getTransactionById(@PathVariable("transactionId") String transactionId) throws TransactionReadException {
+    public ResponseEntity<Transaction> getTransactionById(@PathVariable("transactionId") String transactionId) {
         Optional<Transaction> transaction = accountService.getTransaction(transactionId);
 
         return transaction
@@ -54,7 +54,7 @@ public class AccountController {
     }
 
     @PutMapping(path = "/update/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public AccountDetails updateTransaction(@PathVariable("transactionId") String transactionId, @RequestBody TransactionWithoutId transaction) throws TransactionReadException, IOException, TransactionNotFoundException {
+    public AccountDetails updateTransaction(@PathVariable("transactionId") String transactionId, @RequestBody TransactionWithoutId transaction) throws TransactionReadException {
         return accountService.saveTransaction(transactionId, transaction);
     }
 
